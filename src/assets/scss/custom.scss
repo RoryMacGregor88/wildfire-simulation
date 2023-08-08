@@ -1,0 +1,185 @@
+.dflt-seperator {
+  border-bottom: $border-width solid $border-color;
+}
+.react-datepicker__input-container {
+  input {
+    @extend .form-control;
+  }
+}
+
+.calender-left {
+  border-top-left-radius: 0.3rem;
+  border-bottom-left-radius: 0.3rem;
+  i {
+    color: $gray-100;
+  }
+}
+.calender-right {
+  border-top-right-radius: 0.3rem;
+  border-bottom-right-radius: 0.3rem;
+  i {
+    color: $gray-100;
+  }
+}
+.flatpickr-input {
+  border: none;
+}
+
+.twitter-tweet-rendered {
+  margin: 0 !important;
+}
+
+.rc-pagination li {
+  background-color: transparent;
+  border: none;
+  color: $gray-700;
+  vertical-align: middle;
+  button {
+    background-color: transparent !important;
+    border: none !important;
+    line-height: 5px;
+    padding-bottom: 5px;
+    font-size: 31px !important;
+    color: $gray-700;
+  }
+}
+
+.rc-pagination-disabled button {
+  color: $gray-500 !important;
+}
+
+.rc-pagination-item-active {
+  background-color: $primary !important;
+  border-radius: 14px;
+  color: $black !important;
+}
+
+.alert-tooltip {
+  background: $primary !important;
+  ::after {
+    border-right-color: $primary !important;
+  }
+  border-radius: 10px !important;
+  z-index: 100;
+}
+
+.data-layers-alert-tooltip {
+  max-width: 25rem;
+  overflow-wrap: break-word;
+}
+
+.alert-tooltip.place-right::after {
+  border-right-color: $primary !important;
+}
+
+.tooltip-desc {
+  width: 300px;
+}
+
+.modal-video {
+  position: fixed !important;
+}
+
+.alert-badge {
+  min-width: 60px;
+}
+
+.sort-select-input {
+  padding: 10px;
+}
+
+.new-info-indicator {
+  width: 30px;
+  height: 20px;
+  background: $red-500;
+  -moz-border-radius: 50px;
+  -webkit-border-radius: 50px;
+  border-radius: 50px;
+  display: block;
+  padding-top: 2px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.video-thumbnail {
+  min-width: 100%;
+  min-height: 100%;
+  height: auto;
+}
+
+.debug {
+  border: 1px solid red;
+}
+
+.clickable {
+  &:hover{
+    cursor: pointer;
+  }
+}
+
+pre {
+  font-size: 90%;
+}
+
+.custom-disabled-container * {
+    color: $gray-500 !important;
+    cursor: default !important;
+}
+
+.available {
+  color: green;
+}
+.processing {
+  color: teal;
+}
+.failed {
+  color:red;
+}
+
+.on-demand-leaf {
+  display: flex;
+  justify-content: space-between;
+}
+
+.map-style-dropdown {
+  position: absolute;
+  bottom: 80px;
+  right: 10px;
+}
+
+.map-style-icon {
+  font-size: 13px;
+  padding: 3px 0 3px 0;
+}
+
+.featureInfo {
+  display: grid;
+  border: 1px solid #fff;
+}
+
+.featureRow {
+  display: grid;
+  grid-template-columns: auto auto;
+  border: 1px solid #fff;
+}
+
+.featureCell {
+  display: grid;
+  grid-template-columns: auto auto;
+}
+
+.featureKey {
+  font-weight: 900;
+  padding: 0.5rem;
+}
+
+.featureValue {
+  font-weight: 500;
+  padding: 0.5rem;
+}
+
+.noFeatureInfo {
+  font-weight: 900;
+  margin: unset;
+}

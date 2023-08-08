@@ -1,0 +1,17 @@
+// 
+// my-profile.scss
+//
+
+
+.prof-list {
+  i {
+    font-size: 1.25rem;
+    vertical-align: middle;
+  }
+}
+
+.lnk-edit {
+  color: $primary;
+  @include font-size($h6-font-size);
+  font-weight: normal;
+}

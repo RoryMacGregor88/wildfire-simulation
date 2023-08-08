@@ -1,0 +1,65 @@
+{
+    "camera": {
+        "x": 0,
+        "y": 0,
+        "width": 24,
+        "height": 24,
+        "mask": true
+    },
+    "target": {
+        "x": 25,
+        "y": 0,
+        "width": 24,
+        "height": 24,
+        "mask": true
+    },
+    "people": {
+        "x": 50,
+        "y": 0,
+        "width": 24,
+        "height": 24,
+        "mask": true
+    },
+    "twitter": {
+        "x": 75,
+        "y": 0,
+        "width": 24,
+        "height": 24,
+        "mask": true
+    },
+    "fire": {
+        "x": 100,
+        "y": 0,
+        "width": 24,
+        "height": 24,
+        "mask": true
+    },
+    "flag": {
+        "x": 125,
+        "y": 0,
+        "width": 24,
+        "height": 24,
+        "mask": true
+    },
+    "report": {
+        "x": 150,
+        "y": 0,
+        "width": 24,
+        "height": 24,
+        "mask": true
+    },
+    "communications": {
+        "x": 175,
+        "y": 0,
+        "width": 24,
+        "height": 24,
+        "mask": true
+    },
+    "group": {
+        "x": 200,
+        "y": 0,
+        "width": 24,
+        "height": 24,
+        "mask": true
+    }
+}

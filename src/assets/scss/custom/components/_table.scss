@@ -1,0 +1,70 @@
+//
+// _table.scss
+//
+
+.table {
+  th {
+    font-weight: $font-weight-bold;
+  }
+
+  .table-light {
+    color: $body-color;
+    border-color: $table-border-color;
+    background-color: $table-head-bg;
+  }
+}
+
+.table-bordered {
+  border: $table-border-width solid $table-border-color;
+
+  th,
+  td {
+    border: $table-border-width solid $table-border-color;
+  }
+}
+
+.table-dark > :not(:last-child) > :last-child > * {
+  border-bottom-color: $table-dark-border-color;
+}
+
+.table-nowrap {
+  th,
+  td {
+    white-space: nowrap;
+  }
+}
+
+.on-demand-table {
+  display: flex;
+  align-items: space-between;
+
+  thead {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+  }
+
+  tbody {
+    max-width: 2048px;
+    display: flex;
+    overflow-x: auto;
+  }
+
+  tr {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-right: 0.5rem;
+    min-width: 15rem;
+  }
+
+  td {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+
+    input {
+      width: 15rem;
+    }
+  }
+}

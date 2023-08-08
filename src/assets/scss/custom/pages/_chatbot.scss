@@ -1,0 +1,15 @@
+// 
+// chatbot.scss
+//
+
+.chatbot .tab-container {
+    width: 100%;
+}
+
+#coordinates-input.is-invalid {
+    background-image: none;
+}
+
+.disabled {
+    cursor: not-allowed;
+}

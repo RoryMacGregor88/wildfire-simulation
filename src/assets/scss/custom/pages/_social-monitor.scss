@@ -1,0 +1,29 @@
+.tweets-card {
+  background: $gray-900;
+  box-shadow: $box-shadow;
+  border-radius: $border-radius-lg * 3;
+  &.card-header {
+    font-size: 0.8rem;
+    font-weight: bold;
+    font-stretch: condensed;
+    font-style: normal;
+    line-height: 1.43;
+    letter-spacing: 0.35px;
+    color: #fdfdfd;
+  }
+  .card-body {
+    padding-bottom: 0.5rem;
+    padding-top: 0.5rem;
+    font-size: 1.25rem;
+    font-weight: bold;
+    font-stretch: condensed;
+    font-style: normal;
+    letter-spacing: normal;
+    color: #fff;
+
+    .tweets-trend {
+      font-size: 0.75rem !important;
+      font-weight: normal !important;
+    }
+  }
+}

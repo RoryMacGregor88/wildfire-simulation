@@ -1,0 +1,28 @@
+.notifications-card {
+  @extend .alerts-card;
+
+  &:hover {
+    cursor: default;
+  }
+
+  .notification-badge {
+    @extend .alert-badge;
+  }
+
+  .notification-source-text {
+    @extend .alert-source-text;
+  }
+
+  .notification-type-badge {
+    background-color: #5351fb !important;
+  }
+
+  .notification-status-badge {
+    background-color: #d713d7 !important;
+  }
+
+  .notification-scope-restriction-badge {
+    background-color: #fb8a51 !important;
+  }
+
+}

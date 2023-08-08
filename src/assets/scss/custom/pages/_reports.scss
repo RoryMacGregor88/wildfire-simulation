@@ -1,0 +1,42 @@
+.report-info {
+    color: white;
+    font-size: 15px;
+      .text-title {
+        text-transform: uppercase;
+        font-weight: 800;
+        font-size: 21px;
+        color: #fff;  
+      }
+  }
+  .report-detail {
+    color: white;
+    font-size: 16px;
+    min-height: 500px;
+    padding-bottom: 0;
+    .text-username {
+      font-size: 12px;
+      opacity: 0.7;
+      display: inline-block;
+    }
+    .text-username-org {
+      font-size: 18px;
+      font-weight: bold;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      letter-spacing: 0.45px;
+    }
+    hr {
+      margin: 10px 0;
+    }
+  }
+
+  .reports-card {
+    @extend .alerts-card;
+    .card-desc {
+      font-size: .9rem;
+      line-height: 1.43;
+      letter-spacing: 0.01px;
+      color: #d8d8d8;
+    }
+}

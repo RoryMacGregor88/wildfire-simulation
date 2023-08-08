@@ -1,0 +1,186 @@
+.stats-card {
+  background: $gray-900;
+  box-shadow: $box-shadow;
+  border-radius: $border-radius-lg * 3;
+  &.card-header {
+    font-size: 0.8rem;
+    font-weight: bold;
+    font-stretch: condensed;
+    font-style: normal;
+    line-height: 1.43;
+    letter-spacing: 0.35px;
+    color: #fdfdfd;
+  }
+  .card-body {
+    padding-bottom: 0.5rem;
+    padding-top: 0.5rem;
+    font-size: 2.5rem;
+    font-weight: bold;
+    font-stretch: condensed;
+    font-style: normal;
+    line-height: 0.38;
+    letter-spacing: normal;
+    color: #fff;
+  }
+  .card-footer {
+    font-size: 0.8rem;
+    height: 30px;
+  }
+}
+.card-weather {
+  padding: 1.2rem;
+  flex: 1;
+  border-radius: 10px;
+  box-shadow: $box-shadow;
+  background-color: #3d3f47;
+
+  .weather-text {
+    font-size: 1rem;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: 0.45px;
+    color: #fdfdfd;
+  }
+  .badge-temp {
+    border-radius: $border-radius;
+    box-shadow: $box-shadow;
+    :hover {
+      cursor: pointer;
+    }
+    span {
+      font-size: 0.9rem;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      letter-spacing: 0.45px;
+      text-align: center;
+      color: #fdfdfd;
+    }
+  }
+  .active-badge {
+    background: $orange !important;
+  }
+  .pressure {
+    background-color: #323333 !important;
+  }
+  .celcius-symbol {
+    font-size: 1.2rem;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: 0.35px;
+    /* text-align: center; */
+    color: #fdfdfd;
+  }
+  .card-temperature {
+    margin: 10px 11px 0 0;
+    border-radius: 10px;
+    box-shadow: 12px 8px 24px -12px rgb(0 0 0 / 30%);
+    background-color: #3d3f47;
+
+    .pressure-text {
+      opacity: 0.6;
+      font-size: 22px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      letter-spacing: 0.9px;
+      text-align: center;
+      color: #fdfdfd;
+    }
+    .degrees-text {
+      font-size: 42px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      letter-spacing: 1.8px;
+      text-align: center;
+      color: #fdfdfd;
+    }
+  }
+}
+
+.weather-variables-card {
+  @extend .card-temperature;
+  height: 20rem;
+  .time-text {
+    opacity: 0.6;
+    font-size: 1rem;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: 0.4px;
+    text-align: center;
+    color: #fdfdfd;
+  }
+  .body-text {
+    font-size: 1.125rem;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: 0.45px;
+    text-align: center;
+    color: #fdfdfd;
+  }
+}
+
+.dashboard-image {
+  height: 13rem;
+}
+
+.map-card {
+  overflow: hidden !important;
+  #deckgl-overlay {
+    border-radius: $border-radius-lg;
+    box-shadow: $box-shadow;
+  }
+  .map-overlay-card {
+    @extend .stats-card;
+    .card-body {
+      font-weight: normal;
+    }
+    opacity: 0.89;
+    border-radius: $border-radius-lg;
+    box-shadow: $box-shadow;
+    background-color: $gray-100;
+  }
+}
+
+#selectAoiDashboard {
+  width: auto;
+  display: inline-block;
+  margin-left: 5px;
+}
+
+// event dashboard
+
+.switch-data-layer-btn {
+  padding: 1.2rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  color: white !important;
+
+  &.left {
+    border-bottom-right-radius: 0px;
+    border-top-right-radius: 0px;
+  }
+  &.right {
+    border-bottom-left-radius: 0px;
+    border-top-left-radius: 0px;
+  }
+
+  &.active {
+    background-color: #3d3f47;
+  }
+  &:not(.active) {
+    background: none;
+  }
+}

@@ -1,0 +1,132 @@
+//
+// _buttons.scss
+//
+
+button,
+a {
+  outline: none !important;
+}
+
+// Rounded Buttons
+.btn-rounded {
+  border-radius: 30px;
+}
+
+.btn-mapstyle {
+  background-color: $white;
+  color: $gray-100;
+  border: 1px solid #ddd;
+}
+
+.btn-dark,
+.btn-secondary {
+  color: $gray-600;
+  background-color: $gray-200;
+  border: none;
+  &:hover, &:focus {
+    color: $gray-100;
+    background-color: $gray-400;
+  }
+}
+
+.btn-outline-light {
+  color: $gray-900;
+}
+
+.btn-outline-dark,
+.btn-dark {
+  &:not(:disabled):not(.disabled):active,
+  &:not(:disabled):not(.disabled).active,
+  .show > &.dropdown-toggle,
+  &:hover {
+    color: $light;
+  }
+}
+
+// example 1
+
+.btn-group-example {
+  .btn {
+    position: relative;
+
+    &:first-child {
+      &::before {
+        display: none;
+      }
+    }
+
+    &:before {
+      content: "OR";
+      position: absolute;
+      font-size: 10px;
+      width: 24px;
+      height: 24px;
+      line-height: 24px;
+      border-radius: 50%;
+      background-color: $gray-600;
+      color: $light;
+      border: 1px solid $white;
+      left: -12px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 1;
+    }
+  }
+}
+
+// Example 2
+
+.btn-label {
+  position: relative;
+  padding-left: 44px;
+  .label-icon {
+    position: absolute;
+    width: 32px;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background-color: rgba($white, 0.1);
+    border-right: 1px solid rgba($white, 0.1);
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  &.btn-light {
+    .label-icon {
+      background-color: rgba($gray-800, 0.1);
+      border-right: 1px solid rgba($gray-800, 0.2);
+    }
+  }
+}
+
+.btn-orange.request-map {
+  background-color: $orange ;
+  color: black !important;
+}
+
+.data-layers-dialog-btn {
+  background-color: rgba($black, 0.75);
+  color: $white;
+  padding: 1.5rem 1rem;
+  border-radius: 5px;
+  font-size: 1rem;
+  border: none;
+  &:hover {
+    background-color: $orange;
+  }
+}
+
+.data-layers-dialog-cancel {
+  padding: 0.25rem 2rem;
+  border-radius: 5px;
+  border: 1px solid transparent;
+  &:hover {
+    border: 1px solid $orange;
+    color: $orange;
+  }
+}
+
+.full {
+  width:100%;
+}
