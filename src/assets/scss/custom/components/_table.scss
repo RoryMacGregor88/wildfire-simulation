@@ -36,32 +36,30 @@
 
 .on-demand-table {
   display: flex;
-  align-items: space-between;
+  flex-direction: column;
+  table-layout: fixed;
 
   thead {
     display: flex;
-    flex-direction: column;
-    justify-content: space-around;
   }
 
   tbody {
-    max-width: 2048px;
     display: flex;
+    flex-direction: column;
     overflow-x: auto;
   }
 
   tr {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    margin-right: 0.5rem;
-    min-width: 15rem;
+    justify-content: space-between;
+    width: 100%;
   }
 
   td {
     display: flex;
-    justify-content: flex-start;
-    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
 
     input {
       width: 15rem;

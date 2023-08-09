@@ -15,7 +15,6 @@ import {
 } from 'react-map-gl-draw';
 import { useAppSelector, useAppDispatch } from '~/hooks';
 
-import { MAPBOX_TOKEN } from '~/config';
 import { FIRE_BREAK_STROKE_COLORS } from '~/constants';
 import {
   selectedFireBreakSelector,
@@ -24,6 +23,8 @@ import {
 } from '~/store/app.slice';
 
 import { useMap } from '~/hooks';
+
+const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
 const POLYGON_LINE_COLOR = 'rgb(38, 181, 242)';
 const POLYGON_FILL_COLOR = 'rgba(255, 255, 255, 0.5)';
@@ -54,7 +55,7 @@ const PolygonMap = ({
   const selectedFireBreak = useAppSelector(selectedFireBreakSelector);
   const selectedMapStyle = useAppSelector(selectedMapStyleSelector);
 
-  const finalLayerSet = [...(!!layers ? layers : null)];
+  const finalLayerSet = [...(layers ?? [])];
 
   const MODES = [
     { id: 'editing', text: 'Edit Feature', handler: EditingMode },

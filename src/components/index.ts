@@ -2,5 +2,14 @@ import WildfireSimulationForm from './wildfire-simulation-form/wildfire-simulati
 import PolygonMap from './polygon-map/polygon-map.component';
 import MapCard from './map/map-card.component';
 import MapInput from './map-input/map-input.component';
+import SimulationReview from './simulation-review.component';
+import WktHelp from './wkt-help.component';
 
-export { WildfireSimulationForm, PolygonMap, MapCard, MapInput };
+export {
+  WildfireSimulationForm,
+  PolygonMap,
+  MapCard,
+  MapInput,
+  SimulationReview,
+  WktHelp,
+};

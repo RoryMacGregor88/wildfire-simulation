@@ -1,11 +1,31 @@
-import { Row, Col } from 'reactstrap';
-import { WildfireSimulationForm } from '~/components';
+import { useState } from 'react';
+import { Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import {
+  SimulationReview,
+  WildfireSimulationForm,
+  WktHelp,
+} from '~/components';
+import { SIMULATION_REVIEW, WKT_HELP } from '~/constants';
+import { useMap } from '~/hooks';
 
 const App = () => {
-  const handleResetAOI = () => {};
-  const backToOnDemandPanel = () => {};
-  const mapInputOnChange = () => {};
-  const onSubmit = () => {};
+  const { resetViewState } = useMap();
+  const [modalData, setModalData] = useState(null);
+
+  const toggle = () => setModalData(null);
+
+  const { type, data } = modalData ?? {};
+
+  const isSimulationReview = type === SIMULATION_REVIEW,
+    isWktHelp = type === WKT_HELP;
+
+  const mapInputOnChange = (values) => {
+    console.log('MAP VALUES: ', values);
+  };
+
+  const onSubmit = (formValues) => {
+    setModalData({ type: SIMULATION_REVIEW, data: formValues });
+  };
 
   return (
     <div className='page-content'>
@@ -21,12 +41,28 @@ const App = () => {
           <Col xl={7} />
         </Row>
         <WildfireSimulationForm
-          handleResetAOI={handleResetAOI}
-          backToOnDemandPanel={backToOnDemandPanel}
+          handleResetAOI={resetViewState}
           mapInputOnChange={mapInputOnChange}
+          setModalData={setModalData}
           onSubmit={onSubmit}
         />
       </div>
+      <Modal
+        centered
+        isOpen={!!modalData}
+        toggle={toggle}
+        size='lg'
+        id='staticBackdrop'
+      >
+        <ModalHeader style={{ borderColor: 'gray' }} toggle={toggle}>
+          {isWktHelp ? 'WKT Guidance' : null}
+          {isSimulationReview ? 'Simulation Review' : null}
+        </ModalHeader>
+        <ModalBody>
+          {isWktHelp ? <WktHelp /> : null}
+          {isSimulationReview ? <SimulationReview data={data} /> : null}
+        </ModalBody>
+      </Modal>
     </div>
   );
 };

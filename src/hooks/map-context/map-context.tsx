@@ -42,6 +42,11 @@ export const MapProvider = (props) => {
     []
   );
 
+  const resetViewState = useCallback(
+    () => setViewState(INITIAL_VIEW_STATE),
+    []
+  );
+
   return (
     <MapContext.Provider
       value={{
@@ -50,6 +55,7 @@ export const MapProvider = (props) => {
         viewState,
         setViewState,
         updateViewState,
+        resetViewState,
       }}
       {...props}
     />

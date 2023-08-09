@@ -229,9 +229,23 @@ const getGeneralErrors = (errors) => {
   );
 };
 
-const getError = (key, errors, touched, errStyle = true, validateOnChange) => {
+interface GetErrorArgs {
+  key: string;
+  errors: { [key: string]: string };
+  touched: { [key: string]: string };
+  errorStyle?: boolean;
+  validateOnChange?: boolean;
+}
+
+const getError = ({
+  key,
+  errors,
+  touched,
+  errorStyle = true,
+  validateOnChange = false,
+}: GetErrorArgs) => {
   if (errors[key] && (touched[key] || validateOnChange)) {
-    return errStyle ? (
+    return errorStyle ? (
       'is-invalid'
     ) : (
       <div className='invalid-feedback d-block'>{errors[key]}</div>

@@ -86,6 +86,7 @@
 
 .sort-select-input {
   padding: 10px;
+  display: inline !important;
 }
 
 .new-info-indicator {
@@ -113,7 +114,7 @@
 }
 
 .clickable {
-  &:hover{
+  &:hover {
     cursor: pointer;
   }
 }
@@ -123,8 +124,8 @@ pre {
 }
 
 .custom-disabled-container * {
-    color: $gray-500 !important;
-    cursor: default !important;
+  color: $gray-500 !important;
+  cursor: default !important;
 }
 
 .available {
@@ -134,7 +135,7 @@ pre {
   color: teal;
 }
 .failed {
-  color:red;
+  color: red;
 }
 
 .on-demand-leaf {

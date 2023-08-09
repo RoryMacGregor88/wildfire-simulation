@@ -1,9 +1,10 @@
-export const MAP_VALIDATION = {
-  // 40,000 km2 = 40 million m2
-  MAX_GEOMETRY_AREA: {
-    label: '40,000 square kilometres',
-    value: 40000000000,
-  },
+export const WKT_HELP = 'wktHelp';
+export const SIMULATION_REVIEW = 'simulationReview';
+
+// 40,000 km2 = 40 million m2
+export const MAX_GEOMETRY_AREA = {
+  label: '40,000 square kilometres',
+  value: 40000000000,
 };
 
 // increase the bbox used to view Wildfire layers by 20 kms
@@ -14,12 +15,12 @@ export const SIMULATION_TIME_LIMIT = 72;
 export const DEFAULT_FIRE_BREAK_TYPE = 'canadair';
 
 export const BOUNDARY_CONDITIONS_TABLE_HEADERS = [
-  'timeHours',
-  'windDirection',
-  'windSpeed',
-  'fuelMoistureContent',
-  'fireBreakType',
-  'fireBreakData',
+  'Time (hours)',
+  'Wind Direction',
+  'Wind Speed',
+  'Fuel Moisture Content',
+  'Fire Break Type',
+  'Fire Break Data',
 ];
 
 export const PROBABILITY_INFO =

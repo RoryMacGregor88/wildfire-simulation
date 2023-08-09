@@ -1,89 +1,94 @@
 .dl-tree-collapse {
-    color: #fff;
+  color: #fff;
 }
 
 .dl-item {
-    color: #fff;
-    width: 450px;
-    &.selected {
-        background-color: #909090 !important;
-    }
+  color: #fff;
+  width: 450px;
+  &.selected {
+    background-color: #909090 !important;
+  }
 }
 
 .rangeslider-horizontal {
-    width: 400px;
+  width: 400px;
 }
 
 .btn-layers-slider-play {
-    color: #e27b1d !important;
+  color: #e27b1d !important;
 }
 
 .rangeslider .rangeslider__handle-tooltip {
-    width: 200px !important;
-    height: 40px;
+  width: 200px !important;
+  height: 40px;
 }
 
 .legend-container {
-    display: flex;
-    align-items: center;
-    height: 100%;
-    width: fit-content;
-    z-index: 1;
-    img {
-        max-width: 12.5rem;
-    }
+  display: flex;
+  align-items: center;
+  height: 100%;
+  width: fit-content;
+  z-index: 1;
+  img {
+    max-width: 12.5rem;
+  }
 }
 
 .legend {
-    overflow-y: auto;
-    overflow-x: hidden;
-    height: 80%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 80%;
 }
 
 .props_box {
-    margin: 0;
-    background-color: #2c2d34;
+  margin: 0;
+  background-color: #2c2d34;
 }
 
 .props-line {
-    margin: 0;
+  margin: 0;
 }
 
 .timestamp-container {
-    position: absolute;
-    z-index: 100;
-    bottom: 25px;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    pointer-events: none;
-    user-select: none;
-    justify-content: center;
+  position: absolute;
+  z-index: 100;
+  bottom: 25px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  user-select: none;
+  justify-content: center;
 }
 
 .timestamp-display {
-    font-size: 1.5rem;
-    color: $white;
-    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+  font-size: 1.5rem;
+  color: $white;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
+    1px 1px 0 #000;
 }
 
 .meta-icon {
-    &:hover {
-        cursor: pointer;
-        color: $primary;
-    }
+  &:hover {
+    cursor: pointer;
+    color: $primary;
+  }
 }
 
 .meta-close {
-    float: right;
-    margin-right: 35px;
-    cursor: pointer;
+  float: right;
+  margin-right: 35px;
+  cursor: pointer;
 }
 
 .custom-clear-btn {
-    width: 29px;
-    height: 29px;
-    border: 0;
-    cursor: pointer;
-    border-radius: 0.25rem;
+  width: 29px;
+  height: 29px;
+  border: 0;
+  cursor: pointer;
+  border-radius: 0.25rem;
+}
+
+.fire-break-selected {
+  background-color: #2c2d34;
 }
