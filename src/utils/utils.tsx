@@ -241,15 +241,10 @@ const getError = ({
   key,
   errors,
   touched,
-  errorStyle = true,
   validateOnChange = false,
 }: GetErrorArgs) => {
   if (errors[key] && (touched[key] || validateOnChange)) {
-    return errorStyle ? (
-      'is-invalid'
-    ) : (
-      <div className='invalid-feedback d-block'>{errors[key]}</div>
-    );
+    return <div className='invalid-feedback d-block'>{errors[key]}</div>;
   }
 };
 
