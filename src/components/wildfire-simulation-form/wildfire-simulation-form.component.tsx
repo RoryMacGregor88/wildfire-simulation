@@ -680,173 +680,188 @@ const WildfireSimulation = ({
                             Boundary Conditions
                           </Label>
                           <table className='on-demand-table'>
-                            <tr>
-                              {BOUNDARY_CONDITIONS_TABLE_HEADERS.map(
-                                (header) => (
-                                  <th key={header} className='font-bold'>
-                                    {header}
-                                  </th>
-                                )
-                              )}
-                            </tr>
-                            <FieldArray name='boundaryConditions'>
-                              {() =>
-                                tableEntries.map((position) => {
-                                  const isFireBreakSelected =
-                                    position === selectedFireBreak?.position;
-                                  return (
-                                    <tr key={position}>
-                                      <td>
-                                        <Input
-                                          name={`boundaryConditions.${position}.timeOffset`}
-                                          id={`boundaryConditions.${position}.timeOffset`}
-                                          value={
-                                            values.boundaryConditions[position]
-                                              ?.timeOffset ?? ''
-                                          }
-                                          disabled={position === 0}
-                                          placeholder='[Type value]'
-                                          onChange={handleChange}
-                                          onBlur={handleBlur}
-                                        />
-                                        {renderDynamicError(
-                                          errors.boundaryConditions?.[position]
-                                            ?.timeOffset
-                                        )}
-                                      </td>
-                                      <td>
-                                        <Input
-                                          name={`boundaryConditions.${position}.windDirection`}
-                                          id={`boundaryConditions.${position}.windDirection`}
-                                          placeholder='[Type value]'
-                                          onChange={handleChange}
-                                          onBlur={handleBlur}
-                                        />
-                                        {renderDynamicError(
-                                          errors.boundaryConditions?.[position]
-                                            ?.windDirection
-                                        )}
-                                      </td>
-                                      <td>
-                                        <Input
-                                          name={`boundaryConditions.${position}.windSpeed`}
-                                          id={`boundaryConditions.${position}.windSpeed`}
-                                          placeholder='[Type value]'
-                                          onChange={handleChange}
-                                          onBlur={handleBlur}
-                                        />
-                                        {renderDynamicError(
-                                          errors.boundaryConditions?.[position]
-                                            ?.windSpeed
-                                        )}
-                                      </td>
-                                      <td>
-                                        <Input
-                                          name={`boundaryConditions.${position}.fuelMoistureContent`}
-                                          id={`boundaryConditions.${position}.fuelMoistureContent`}
-                                          placeholder='[Type value]'
-                                          onChange={handleChange}
-                                          onBlur={handleBlur}
-                                        />
-                                        {renderDynamicError(
-                                          errors.boundaryConditions?.[position]
-                                            ?.fuelMoistureContent
-                                        )}
-                                      </td>
-                                      <td>
-                                        <div
-                                          className='flex flex-row flex-nowrap gap-2 justify-between w-full'
-                                          style={{ gap: '2rem' }}
-                                        >
+                            <thead>
+                              <tr>
+                                {BOUNDARY_CONDITIONS_TABLE_HEADERS.map(
+                                  (header) => (
+                                    <th key={header} className='font-bold'>
+                                      {header}
+                                    </th>
+                                  )
+                                )}
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <FieldArray name='boundaryConditions'>
+                                {() =>
+                                  tableEntries.map((position) => {
+                                    const isFireBreakSelected =
+                                      position === selectedFireBreak?.position;
+                                    return (
+                                      <tr key={position}>
+                                        <td>
                                           <Input
-                                            type='select'
-                                            className='btn-sm sort-select-input w-6'
-                                            style={{ width: '10rem' }}
+                                            name={`boundaryConditions.${position}.timeOffset`}
+                                            id={`boundaryConditions.${position}.timeOffset`}
                                             value={
-                                              fireBreakSelectedOptions[position]
+                                              values.boundaryConditions[
+                                                position
+                                              ]?.timeOffset ?? ''
                                             }
-                                            onChange={({ target: { value } }) =>
-                                              dispatch(
-                                                setSelectedFireBreak({
-                                                  position,
-                                                  type: value,
-                                                })
-                                              )
-                                            }
+                                            disabled={position === 0}
+                                            placeholder='[Type value]'
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                          />
+                                          {renderDynamicError(
+                                            errors.boundaryConditions?.[
+                                              position
+                                            ]?.timeOffset
+                                          )}
+                                        </td>
+                                        <td>
+                                          <Input
+                                            name={`boundaryConditions.${position}.windDirection`}
+                                            id={`boundaryConditions.${position}.windDirection`}
+                                            placeholder='[Type value]'
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                          />
+                                          {renderDynamicError(
+                                            errors.boundaryConditions?.[
+                                              position
+                                            ]?.windDirection
+                                          )}
+                                        </td>
+                                        <td>
+                                          <Input
+                                            name={`boundaryConditions.${position}.windSpeed`}
+                                            id={`boundaryConditions.${position}.windSpeed`}
+                                            placeholder='[Type value]'
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                          />
+                                          {renderDynamicError(
+                                            errors.boundaryConditions?.[
+                                              position
+                                            ]?.windSpeed
+                                          )}
+                                        </td>
+                                        <td>
+                                          <Input
+                                            name={`boundaryConditions.${position}.fuelMoistureContent`}
+                                            id={`boundaryConditions.${position}.fuelMoistureContent`}
+                                            placeholder='[Type value]'
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                          />
+                                          {renderDynamicError(
+                                            errors.boundaryConditions?.[
+                                              position
+                                            ]?.fuelMoistureContent
+                                          )}
+                                        </td>
+                                        <td>
+                                          <div
+                                            className='flex flex-row flex-nowrap gap-2 justify-between w-full'
+                                            style={{ gap: '2rem' }}
                                           >
-                                            {FIRE_BREAK_OPTIONS.map(
-                                              ({ label, value }) => (
-                                                <option
-                                                  key={label}
-                                                  value={value}
-                                                >
-                                                  {label}
-                                                </option>
-                                              )
+                                            <Input
+                                              type='select'
+                                              className='btn-sm sort-select-input w-6'
+                                              style={{ width: '10rem' }}
+                                              value={
+                                                fireBreakSelectedOptions[
+                                                  position
+                                                ]
+                                              }
+                                              onChange={({
+                                                target: { value },
+                                              }) =>
+                                                dispatch(
+                                                  setSelectedFireBreak({
+                                                    position,
+                                                    type: value,
+                                                  })
+                                                )
+                                              }
+                                            >
+                                              {FIRE_BREAK_OPTIONS.map(
+                                                ({ label, value }) => (
+                                                  <option
+                                                    key={label}
+                                                    value={value}
+                                                  >
+                                                    {label}
+                                                  </option>
+                                                )
+                                              )}
+                                            </Input>
+                                            <button
+                                              key={position}
+                                              color='primary'
+                                              onClick={(e) =>
+                                                handleFireBreakEditClick(
+                                                  e,
+                                                  position
+                                                )
+                                              }
+                                              className={`btn btn-primary ${
+                                                !isFireBreakSelected
+                                                  ? 'fire-break-selected'
+                                                  : ''
+                                              }`}
+                                              style={{ marginLeft: '0.5rem' }}
+                                            >
+                                              {isFireBreakSelected
+                                                ? 'Finish'
+                                                : 'Edit'}
+                                            </button>
+                                          </div>
+                                          {/* for consistency in table layout */}
+                                          <div style={{ height: '1rem' }} />
+                                        </td>
+                                        <td>
+                                          <Input
+                                            name={`boundaryConditions.${position}.fireBreak`}
+                                            id={`boundaryConditions.${position}.fireBreak`}
+                                            readOnly
+                                            type='textarea'
+                                            value={getWKTfromFeature(
+                                              values.boundaryConditions?.[
+                                                position
+                                              ]?.fireBreak?.[
+                                                fireBreakSelectedOptions[
+                                                  position
+                                                ]
+                                              ] ?? ''
                                             )}
-                                          </Input>
-                                          <button
-                                            key={position}
-                                            color='primary'
-                                            onClick={(e) =>
-                                              handleFireBreakEditClick(
-                                                e,
+                                            onBlur={handleBlur}
+                                          />
+                                        </td>
+                                        <td>
+                                          <i
+                                            className='bx bx-trash font-size-24 p-0 w-auto'
+                                            onClick={() =>
+                                              removeBoundaryConditionTableColumn(
                                                 position
                                               )
                                             }
-                                            className={`btn btn-primary ${
-                                              !isFireBreakSelected
-                                                ? 'fire-break-selected'
-                                                : ''
-                                            }`}
-                                            style={{ marginLeft: '0.5rem' }}
-                                          >
-                                            {isFireBreakSelected
-                                              ? 'Finish'
-                                              : 'Edit'}
-                                          </button>
-                                        </div>
-                                        {/* for consistency in table layout */}
-                                        <div style={{ height: '1rem' }} />
-                                      </td>
-                                      <td>
-                                        <Input
-                                          name={`boundaryConditions.${position}.fireBreak`}
-                                          id={`boundaryConditions.${position}.fireBreak`}
-                                          readOnly
-                                          type='textarea'
-                                          value={getWKTfromFeature(
-                                            values.boundaryConditions?.[
-                                              position
-                                            ]?.fireBreak?.[
-                                              fireBreakSelectedOptions[position]
-                                            ] ?? ''
-                                          )}
-                                          onBlur={handleBlur}
-                                        />
-                                      </td>
-                                      <td>
-                                        <i
-                                          className='bx bx-trash font-size-24 p-0 w-auto'
-                                          onClick={() =>
-                                            removeBoundaryConditionTableColumn(
-                                              position
-                                            )
-                                          }
-                                          style={{
-                                            cursor: 'pointer',
-                                            visibility:
-                                              position === 0
-                                                ? 'hidden'
-                                                : 'visible',
-                                          }}
-                                        />
-                                      </td>
-                                    </tr>
-                                  );
-                                })
-                              }
-                            </FieldArray>
+                                            style={{
+                                              cursor: 'pointer',
+                                              visibility:
+                                                position === 0
+                                                  ? 'hidden'
+                                                  : 'visible',
+                                            }}
+                                          />
+                                        </td>
+                                      </tr>
+                                    );
+                                  })
+                                }
+                              </FieldArray>
+                            </tbody>
                           </table>
 
                           <div className='d-flex flex-column align-items-center'>
