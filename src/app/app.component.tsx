@@ -1,12 +1,21 @@
 import { useState } from 'react';
 import { Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import wkt from 'wkt';
+import { area } from '@turf/turf';
 import {
   SimulationReview,
   WildfireSimulationForm,
   WktHelp,
 } from '~/components';
-import { SIMULATION_REVIEW, WKT_HELP } from '~/constants';
+import {
+  DEFAULT_WILDFIRE_GEOMETRY_BUFFER,
+  MAX_GEOMETRY_AREA,
+  SIMULATION_REVIEW,
+  WILDFIRE_LAYER_TYPES,
+  WKT_HELP,
+} from '~/constants';
 import { useMap } from '~/hooks';
+import { getGeoPolygon, getWKTfromFeature, isWKTValid } from '~/utils/utils';
 
 const App = () => {
   const { resetViewState } = useMap();
@@ -19,12 +28,57 @@ const App = () => {
   const isSimulationReview = type === SIMULATION_REVIEW,
     isWktHelp = type === WKT_HELP;
 
-  const mapInputOnChange = (values) => {
-    console.log('MAP VALUES: ', values);
-  };
+  const onSubmit = (formData) => {
+    /** Rename properties to match what server expects */
+    const boundary_conditions = Object.values(formData.boundaryConditions).map(
+      (obj) => ({
+        time: Number(obj.timeOffset),
+        w_dir: Number(obj.windDirection),
+        w_speed: Number(obj.windSpeed),
+        moisture: Number(obj.fuelMoistureContent),
+        fireBreak: obj.fireBreak
+          ? /** filter out any 'fireBreak' keys which are just empy arrays */
+            Object.entries(obj.fireBreak).reduce(
+              (acc, [key, value]) =>
+                !!value.length
+                  ? {
+                      ...acc,
+                      [key]: getWKTfromFeature(value),
+                    }
+                  : acc,
+              {}
+            )
+          : {},
+      }),
+      []
+    );
 
-  const onSubmit = (formValues) => {
-    setModalData({ type: SIMULATION_REVIEW, data: formValues });
+    const transformedGeometry = getWKTfromFeature(formData.mapSelection);
+    const startDateTime = new Date(formData.ignitionDateTime).toISOString();
+    const endDateTime = new Date(
+      moment(startDateTime)
+        .add(formData.hoursOfProjection, 'hours')
+        .toISOString()
+        .slice(0, 19)
+    );
+
+    const payload = {
+      data_types: WILDFIRE_LAYER_TYPES.map(({ id }) => id),
+      geometry: transformedGeometry,
+      geometry_buffer_size: DEFAULT_WILDFIRE_GEOMETRY_BUFFER,
+      title: formData.simulationTitle,
+      parameters: {
+        description: formData.simulationDescription,
+        start: startDateTime,
+        end: endDateTime,
+        time_limit: Number(formData.hoursOfProjection),
+        probabilityRange: Number(formData.probabilityRange),
+        do_spotting: formData.simulationFireSpotting,
+        boundary_conditions,
+      },
+    };
+
+    setModalData({ type: SIMULATION_REVIEW, data: payload });
   };
 
   return (
@@ -42,7 +96,6 @@ const App = () => {
         </Row>
         <WildfireSimulationForm
           handleResetAOI={resetViewState}
-          mapInputOnChange={mapInputOnChange}
           setModalData={setModalData}
           onSubmit={onSubmit}
         />

@@ -40,10 +40,10 @@ export const FIRE_BREAK_OPTIONS = [
 ];
 
 export const FIRE_BREAK_STROKE_COLORS = {
-  canadair: 'rgb(255, 0, 0)',
-  helicopter: 'rgb(0,255,0)',
-  waterLine: 'rgb(255, 255, 0)',
-  vehicle: 'rgb(0, 0, 255)',
+  canadair: 'rgb(234,67,53)',
+  helicopter: 'rgb(52,168,83)',
+  waterLine: 'rgb(251,188,4)',
+  vehicle: 'rgb(66,133,244)',
 };
 
 export const BOUNDARY_CONDITION_INITIAL_STATE = {
@@ -52,3 +52,11 @@ export const BOUNDARY_CONDITION_INITIAL_STATE = {
   fuelMoistureContent: '',
   fireBreak: {},
 };
+
+export const WILDFIRE_LAYER_TYPES = [
+  { id: '35011', name: 'Max rate of spread' },
+  { id: '35010', name: 'Mean rate of spread' },
+  { id: '35009', name: 'Max fireline intensity' },
+  { id: '35008', name: 'Mean fireline intensity' },
+  { id: '35007', name: 'Fire perimeter simulation as isochrones maps' },
+];

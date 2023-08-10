@@ -4,6 +4,11 @@ const name = 'dataLayer';
 
 const MAP_STYLES = [
   {
+    label: 'Satellite Streets',
+    thumbnail: '/satellite.png',
+    uri: 'mapbox://styles/mapbox/satellite-streets-v12',
+  },
+  {
     label: 'Streets',
     thumbnail: '/streets.png',
     uri: 'mapbox://styles/mapbox/streets-v12',
@@ -12,11 +17,6 @@ const MAP_STYLES = [
     label: 'Outdoors',
     thumbnail: '/outdoors.png',
     uri: 'mapbox://styles/mapbox/outdoors-v12',
-  },
-  {
-    label: 'Satellite Streets',
-    thumbnail: '/satellite.png',
-    uri: 'mapbox://styles/mapbox/satellite-streets-v12',
   },
   {
     label: 'Navigation',
@@ -45,10 +45,13 @@ const appSlice = createSlice({
       state.selectedFireBreak = payload;
       state.error = false;
     },
+    setSelectedMapStyle: (state, { payload }) => {
+      state.selectedMapStyle = payload;
+    },
   },
 });
 
-export const { setSelectedFireBreak } = appSlice.actions;
+export const { setSelectedFireBreak, setSelectedMapStyle } = appSlice.actions;
 
 const baseSelector = (state) => state?.app;
 
@@ -62,6 +65,11 @@ export const selectedFireBreakSelector = createSelector(
 export const selectedMapStyleSelector = createSelector(
   baseSelector,
   (app) => app?.selectedMapStyle
+);
+
+export const mapStylesSelector = createSelector(
+  baseSelector,
+  (app) => app?.mapStyles
 );
 
 export default appSlice.reducer;

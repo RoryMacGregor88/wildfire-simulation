@@ -125,73 +125,62 @@ const getAsGeoJSON = (data) =>
     };
   });
 
-export const EPSG_4326 = 'EPSG4326';
-export const EPSG_3857 = 'EPSG3857';
-
-/* EPSG support ranges - validator obj  */
-
-const VALIDATORS = {
-  [EPSG_4326]: {
-    longitude: [-180, 180],
-    latitude: [-90, 90],
-  },
-  [EPSG_3857]: {
-    longitude: [-180, 180],
-    latitude: [-85.06, 85.06],
-  },
+/**
+ * EPSG:3857 is a Web Mercator projection used for display by many web-based
+ * mapping tools, including Google Maps and OpenStreetMap, see link:
+ * https://en.wikipedia.org/wiki/EPSG_Geodetic_Parameter_Dataset
+ */
+const EPSG_3857 = {
+  longitude: [-180, 180],
+  latitude: [-85.06, 85.06],
 };
 
 /* Validate WKT and coordinates */
-const areCoordsValid = ([long, lat], epsgCode = EPSG_3857) => {
-  let isValid = false;
-  const currentValidator = VALIDATORS[epsgCode];
+const areCoordsValid = (coords: [number, number]) => {
+  if (coords.some((coord) => typeof coord !== 'number')) return false;
 
-  if (
-    typeof long === 'number' &&
-    long >= currentValidator.longitude[0] &&
-    long <= currentValidator.longitude[1]
-  ) {
-    if (
-      typeof lat === 'number' &&
-      lat >= currentValidator.latitude[0] &&
-      lat <= currentValidator.latitude[1]
-    ) {
-      isValid = true;
-    }
-  }
+  const [long, lat] = coords,
+    { longitude, latitude } = EPSG_3857;
 
-  return isValid;
+  const longIsValid = long >= longitude[0] && long <= longitude[1],
+    latIsValid = lat >= latitude[0] && lat <= latitude[1];
+
+  return longIsValid && latIsValid ? true : false;
 };
 
-const getWKTfromFeature = (feature) => {
-  var tempFeature = null,
-    tempWKT = '';
-  if (!feature || feature.length === 0) {
-    tempWKT = '';
-  } else if (feature.length > 1) {
-    tempFeature = {
-      type: 'GeometryCollection',
-      geometries: feature.map((x) => x.geometry),
-    };
-    tempWKT = wkt.stringify(tempFeature);
-  } else {
-    tempWKT = wkt.stringify(feature[0].geometry);
+const getWKTfromFeature = (value) => {
+  /**
+   * user has typed non-WKT into field, which was
+   * not converted into valid GeoJson
+   */
+  if (!Array.isArray(value)) return value;
+
+  const features = value;
+  if (features?.length) {
+    const dataShape =
+      features.length > 1
+        ? {
+            type: 'GeometryCollection',
+            geometries: features.map((x) => x.geometry),
+          }
+        : features[0].geometry;
+
+    const wktStr = wkt.stringify(dataShape);
+    return wktStr.replace(/\d+\.\d+/g, (match) => Number(match).toFixed(6));
   }
-  const newWKT = tempWKT.replace(/\d+\.\d+/g, function (match) {
-    return Number(match).toFixed(6);
-  });
-  return newWKT;
 };
 
-const isWKTValid = (str) => {
-  const geoObj = wkt.parse(str);
-  if (geoObj) {
-    const geometryArr = geoObj.geometries ? geoObj.geometries : [geoObj]; // Supports for both collections and single geometry
-    return geometryArr.every((geometry) =>
-      geometry.coordinates[0].every((coord) => areCoordsValid(coord))
-    );
-  }
-  return !!geoObj;
+const isWKTValid = (wktString: string): boolean => {
+  const geoObj = wkt.parse(wktString);
+
+  if (!geoObj) return false;
+
+  /** Support for both collections and single geometry */
+  const geometryArray = geoObj.geometries ? geoObj.geometries : [geoObj];
+
+  return geometryArray.every((geometry) =>
+    geometry.coordinates[0].every((coord) => areCoordsValid(coord))
+  );
 };
 
 const getPolygonLayerFromGeometry = (geometry) => {
@@ -213,6 +202,25 @@ const getPolygonLayerFromGeometry = (geometry) => {
   });
 };
 
+const getGeoPolygon = (value) => {
+  const geoJson = wkt.parse(value);
+
+  /**
+   * if non-valid field (user has typed/pasted non-WKT),
+   * just return the value and let validation catch error
+   */
+  if (!geoJson) return value;
+
+  const feature = {
+    type: 'Feature',
+    properties: {},
+    geometry: geoJson,
+  };
+
+  return [feature];
+};
+
+// TODO: move this, no JSX in utils
 const getGeneralErrors = (errors) => {
   if (!errors) return '';
 
@@ -237,13 +245,14 @@ interface GetErrorArgs {
   validateOnChange?: boolean;
 }
 
+// TODO: same here, move
 const getError = ({
   key,
   errors,
   touched,
-  validateOnChange = false,
+  validateOnChange = true,
 }: GetErrorArgs) => {
-  if (errors[key] && (touched[key] || validateOnChange)) {
+  if (errors[key]) {
     return <div className='invalid-feedback d-block'>{errors[key]}</div>;
   }
 };
@@ -258,6 +267,7 @@ export {
   getWKTfromFeature,
   isWKTValid,
   getPolygonLayerFromGeometry,
+  getGeoPolygon,
   getGeneralErrors,
   getError,
 };

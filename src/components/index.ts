@@ -4,6 +4,7 @@ import MapCard from './map/map-card.component';
 import MapInput from './map-input/map-input.component';
 import SimulationReview from './simulation-review.component';
 import WktHelp from './wkt-help.component';
+import MapStyleSwitcher from './map-style-switcher.component';
 
 export {
   WildfireSimulationForm,
@@ -12,4 +13,5 @@ export {
   MapInput,
   SimulationReview,
   WktHelp,
+  MapStyleSwitcher,
 };

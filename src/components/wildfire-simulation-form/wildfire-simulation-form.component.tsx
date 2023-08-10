@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 
-import { area as getFeatureArea } from '@turf/turf';
+import { area } from '@turf/turf';
+import wkt from 'wkt';
 import { FieldArray, Formik } from 'formik';
 import moment from 'moment';
 import { useAppDispatch, useAppSelector } from '~/hooks';
@@ -18,14 +19,18 @@ import {
 } from 'reactstrap';
 import * as Yup from 'yup';
 
-import wkt from 'wkt';
-
 import {
   setSelectedFireBreak,
   selectedFireBreakSelector,
   errorSelector,
 } from '~/store/app.slice';
-import { getWKTfromFeature, getGeneralErrors, getError } from '~/utils/utils';
+import {
+  getWKTfromFeature,
+  getGeneralErrors,
+  getError,
+  isWKTValid,
+  getGeoPolygon,
+} from '~/utils/utils';
 
 import { MapInput, MapCard } from '~/components';
 import {
@@ -38,6 +43,12 @@ import {
   MAX_GEOMETRY_AREA,
 } from '~/constants';
 
+/** Below methods are function(){} declarations due to use of 'this' object */
+
+/**
+ * This fires if the user enters the same value twice for the `Time`
+ * input in the Boundary Conditions fields
+ */
 Yup.addMethod(Yup.number, 'uniqueTimeOffset', function (message) {
   return this.test('uniqueTimeOffset', message, (timeOffset, { from }) => {
     /**
@@ -45,18 +56,31 @@ Yup.addMethod(Yup.number, 'uniqueTimeOffset', function (message) {
      * to furthest relatives. [0] is the immediate parent object,
      * while [1] is the higher parent array of all of those objects.
      */
-    const allTimeOffsets = from[1].value.boundaryConditions.map((d) =>
-      Number(d.timeOffset)
+    const allTimeOffsets = from[1].value.boundaryConditions.map((datum) =>
+      Number(datum.timeOffset)
     );
 
-    const matchCount = allTimeOffsets.filter((d) => d === timeOffset).length;
+    const matchCount = allTimeOffsets.filter(
+      (datum) => datum === timeOffset
+    ).length;
+
     return matchCount <= 1;
   });
 });
 
-Yup.addMethod(Yup.array, 'isValidWKTString', function (message) {
-  return this.test('isValidWKTString', message, (value) =>
-    value.length ? typeof wkt.stringify(value[0]) === 'string' : false
+/**
+ * This fires if the user were to select '3' for 'Hours of Projection', then
+ * create 3 Boundary Conditions, but then change the Hours of Projection back
+ * to a number less than the number of Boundary Condition fields, such as '2'
+ */
+Yup.addMethod(Yup.number, 'matchHoursToBoundaryConditions', function (message) {
+  return this.test(
+    'matchHoursToBoundaryConditions',
+    message,
+    (hours, { from }) => {
+      const boundaryConditionCount = from[0].value.boundaryConditions.length;
+      return Number(hours) >= boundaryConditionCount;
+    }
   );
 });
 
@@ -73,17 +97,22 @@ const WildfireSimulationSchema = Yup.object().shape({
       SIMULATION_TIME_LIMIT,
       `Simulation time limit must be between 1 and ${SIMULATION_TIME_LIMIT} hours`
     )
+    .matchHoursToBoundaryConditions(
+      'Hours cannot be less than number of Boundary Conditions rows'
+    )
     .required('This field cannot be empty'),
   probabilityRange: Yup.string().required('This field cannot be empty'),
   mapSelection: Yup.array()
-    .isValidWKTString('Should contain a valid Well-Known Text')
     .typeError('Should contain a valid Well-Known Text')
-    .required('Should contain a valid Well-Known Text'),
+    .required('This field cannot be empty'),
   isMapAreaValid: Yup.boolean().oneOf(
     [true],
     `Area must be no greater than ${MAX_GEOMETRY_AREA.value}`
   ),
-  isMapAreaValidWKT: Yup.boolean().oneOf([true], 'Geometry must be valid WKT'),
+  isMapAreaValidWKT: Yup.boolean().oneOf(
+    [true],
+    'Should contain a valid Well-Known Text'
+  ),
   ignitionDateTime: Yup.date()
     .typeError('Must be valid date selection')
     .required('This field cannot be empty'),
@@ -129,19 +158,21 @@ const renderDynamicError = (errorMessage: string) => (
   </div>
 );
 
-const WildfireSimulation = ({
-  handleResetAOI,
-  mapInputOnChange,
-  setModalData,
-  onSubmit,
-}) => {
+const TABLE_INITIAL_STATE = [0];
+
+const WildfireSimulation = ({ handleResetAOI, setModalData, onSubmit }) => {
   const dispatch = useAppDispatch();
+
+  const validateArea = (feature) => {
+    const areaIsValid = Math.ceil(area(feature)) <= MAX_GEOMETRY_AREA.value;
+    return areaIsValid;
+  };
 
   const error = useAppSelector(errorSelector);
   const selectedFireBreak = useAppSelector(selectedFireBreakSelector);
 
   /** to manage number of dynamic (vertical) table rows in `Boundary Conditions` */
-  const [tableEntries, setTableEntries] = useState([0]);
+  const [tableEntries, setTableEntries] = useState(TABLE_INITIAL_STATE);
 
   const [fireBreakSelectedOptions, setFireBreakSelectedOptions] = useState({
     0: DEFAULT_FIRE_BREAK_TYPE,
@@ -170,6 +201,43 @@ const WildfireSimulation = ({
     }
   }, [selectedFireBreak]);
 
+  /**
+   * This is never called from drawing on map, only if
+   * pasted/typed directly into field
+   */
+  const mapInputOnChange = (value, setFieldValue) => {
+    /**
+     * WKT converted to GeoJson for storage in form values,
+     * is converted back to WKT to be displayed in form field
+     */
+    setFieldValue('mapSelection', getGeoPolygon(value));
+
+    /**
+     * The below section is here because the field value
+     * 'isMapAreaValid' is shared by this input and the map
+     * itself
+     */
+
+    /** User has cleared input, remove area validation error */
+    if (!value) {
+      setFieldValue('isMapAreaValid', true);
+    } else {
+      const isWktValid = isWKTValid(value);
+      setFieldValue('isValidWkt', isWktValid);
+
+      const features = wkt.parse(value);
+      if (features) {
+        const isAreaValid = validateArea(features);
+        setFieldValue('isMapAreaValid', isAreaValid);
+      }
+    }
+  };
+
+  const clearForm = (resetForm) => {
+    setTableEntries(TABLE_INITIAL_STATE);
+    resetForm();
+  };
+
   /** used to compute end date from start date and number of hours */
   const getDateOffset = (startTime, numberHours) => {
     if (!startTime || !numberHours) return;
@@ -182,9 +250,17 @@ const WildfireSimulation = ({
     return endTime;
   };
 
-  const addBoundaryConditionTableColumn = () => {
+  const addBoundaryConditionTableColumn = (
+    setFieldValue: (field: string, value: any) => void
+  ) => {
     const nextIndex = tableEntries.length;
     setTableEntries([...tableEntries, nextIndex]);
+
+    /**
+     * registers the new boundary condition row, so that it can
+     * be detected by validator functions
+     */
+    setFieldValue(`boundaryConditions.${nextIndex}.timeOffset`, nextIndex);
 
     /**
      * add selected fire break key for boundary condition
@@ -208,9 +284,9 @@ const WildfireSimulation = ({
     );
   };
 
-  const handleFireBreakEditClick = (e, position) => {
-    /** disable button's default 'submit' type, prevent form submitting */
-    e.preventDefault();
+  const handleFireBreakEditClick = (evt, position) => {
+    /** disable button's default 'submit' type, prevent form submitting prematurely */
+    evt.preventDefault();
 
     const isSelected = selectedFireBreak?.position === position;
     const type = fireBreakSelectedOptions[position];
@@ -240,8 +316,8 @@ const WildfireSimulation = ({
                 simulationDescription: '',
                 probabilityRange: 0.75,
                 mapSelection: [],
-                isMapAreaValid: null,
-                isMapAreaValidWKT: null,
+                isMapAreaValid: true,
+                isValidWkt: true,
                 hoursOfProjection: 1,
                 ignitionDateTime: '',
                 simulationFireSpotting: false,
@@ -437,7 +513,7 @@ const WildfireSimulation = ({
 
                           <Row>
                             <FormGroup className='form-group'>
-                              <Label for='mapSelection'>{'mapSelection'}</Label>
+                              <Label for='mapSelection'>Map Selection</Label>
                               <MapInput
                                 className={
                                   !!errors.mapSelection ? 'is-invalid' : ''
@@ -462,6 +538,7 @@ const WildfireSimulation = ({
                                   errors,
                                   touched,
                                 })}
+                              {/* TODO: can just use !, not === false */}
                               {values.isMapAreaValid === false &&
                                 getError({
                                   key: 'isMapAreaValid',
@@ -469,14 +546,14 @@ const WildfireSimulation = ({
                                   touched,
                                   validateOnChange: true,
                                 })}
-                              {values.isMapAreaValidWKT === false &&
-                                values.mapSelection.length !== 0 &&
-                                getError({
-                                  key: 'isMapAreaValidWKT',
-                                  errors,
-                                  touched,
-                                  validateOnChange: true,
-                                })}
+                              {!!values.mapSelection.length
+                                ? getError({
+                                    key: 'isValidWkt',
+                                    errors,
+                                    touched,
+                                    validateOnChange: true,
+                                  })
+                                : null}
                             </FormGroup>
                           </Row>
 
@@ -563,6 +640,9 @@ const WildfireSimulation = ({
                             style={{ height: 670 }}
                           >
                             <MapCard
+                              isDrawingPolygon={!selectedFireBreak}
+                              coordinates={getAllGeojson(values)}
+                              handleAreaValidation={validateArea}
                               setCoordinates={(geoJson, isAreaValid) => {
                                 /** called if map is used to draw polygon */
 
@@ -613,14 +693,21 @@ const WildfireSimulation = ({
                                 } else {
                                   setFieldValue('mapSelection', geoJson);
                                   setFieldValue('isMapAreaValid', isAreaValid);
-                                  setFieldValue('isMapAreaValidWKT', true);
+                                  setFieldValue('isValidWkt', true);
                                 }
                               }}
-                              coordinates={getAllGeojson(values)}
-                              togglePolygonMap={true}
-                              handleAreaValidation={(feature) => {
-                                const area = Math.ceil(getFeatureArea(feature));
-                                return area <= MAX_GEOMETRY_AREA.value;
+                              onSelect={(selected) => {
+                                const id =
+                                  selected?.selectedFeature?.properties?.id;
+                                if (id) {
+                                  const [type, position] = id.split('-');
+                                  dispatch(
+                                    setSelectedFireBreak({
+                                      type,
+                                      position: Number(position),
+                                    })
+                                  );
+                                }
                               }}
                               clearMap={(selectedFeatureData) => {
                                 const { properties, geometry } =
@@ -677,7 +764,8 @@ const WildfireSimulation = ({
                       <Row>
                         <FormGroup className='form-group'>
                           <Label for='boundaryConditions' className='m-0'>
-                            Boundary Conditions
+                            Boundary Conditions (paired with 'Hours Of
+                            Projection')
                           </Label>
                           <table className='on-demand-table'>
                             <thead>
@@ -706,7 +794,7 @@ const WildfireSimulation = ({
                                             value={
                                               values.boundaryConditions[
                                                 position
-                                              ]?.timeOffset ?? ''
+                                              ]?.timeOffset
                                             }
                                             disabled={position === 0}
                                             placeholder='[Type value]'
@@ -868,7 +956,7 @@ const WildfireSimulation = ({
                             <i
                               onClick={() => {
                                 if (maxTables) return;
-                                addBoundaryConditionTableColumn();
+                                addBoundaryConditionTableColumn(setFieldValue);
                               }}
                               className='bx bx-plus-circle p-0 text-lg'
                               style={{
@@ -897,7 +985,7 @@ const WildfireSimulation = ({
                           <Button
                             className='btn btn-secondary ms-3'
                             color='secondary'
-                            onClick={() => resetForm()}
+                            onClick={() => clearForm(resetForm)}
                           >
                             Clear
                           </Button>
