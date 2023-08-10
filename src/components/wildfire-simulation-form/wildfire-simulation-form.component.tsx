@@ -767,9 +767,12 @@ const WildfireSimulation = ({ handleResetAOI, setModalData, onSubmit }) => {
                             Boundary Conditions (paired with 'Hours Of
                             Projection')
                           </Label>
-                          <table className='on-demand-table'>
+                          <table className='on-demand-table align-content-between'>
                             <thead>
-                              <tr>
+                              <tr
+                                className='d-flex justify-content-evenly mt-3'
+                                style={{ height: '100%' }}
+                              >
                                 {BOUNDARY_CONDITIONS_TABLE_HEADERS.map(
                                   (header) => (
                                     <th key={header} className='font-bold'>
@@ -788,6 +791,25 @@ const WildfireSimulation = ({ handleResetAOI, setModalData, onSubmit }) => {
                                     return (
                                       <tr key={position}>
                                         <td>
+                                          <i
+                                            className='bx bx-trash font-size-24 p-0 w-auto'
+                                            onClick={() =>
+                                              removeBoundaryConditionTableColumn(
+                                                position
+                                              )
+                                            }
+                                            style={{
+                                              cursor: 'pointer',
+                                              visibility:
+                                                position === 0
+                                                  ? 'hidden'
+                                                  : 'visible',
+                                            }}
+                                          />
+                                        </td>
+                                        <td
+                                          style={{ justifyContent: 'center' }}
+                                        >
                                           <Input
                                             name={`boundaryConditions.${position}.timeOffset`}
                                             id={`boundaryConditions.${position}.timeOffset`}
@@ -851,13 +873,12 @@ const WildfireSimulation = ({ handleResetAOI, setModalData, onSubmit }) => {
                                         </td>
                                         <td>
                                           <div
-                                            className='flex flex-row flex-nowrap gap-2 justify-between w-full'
-                                            style={{ gap: '2rem' }}
+                                            className='d-flex align-items-center gap-2 my-1'
+                                            style={{ width: '100%' }}
                                           >
                                             <Input
                                               type='select'
-                                              className='btn-sm sort-select-input w-6'
-                                              style={{ width: '10rem' }}
+                                              className='btn-sm sort-select-input'
                                               value={
                                                 fireBreakSelectedOptions[
                                                   position
@@ -899,7 +920,6 @@ const WildfireSimulation = ({ handleResetAOI, setModalData, onSubmit }) => {
                                                   ? 'fire-break-selected'
                                                   : ''
                                               }`}
-                                              style={{ marginLeft: '0.5rem' }}
                                             >
                                               {isFireBreakSelected
                                                 ? 'Finish'
@@ -927,32 +947,12 @@ const WildfireSimulation = ({ handleResetAOI, setModalData, onSubmit }) => {
                                             onBlur={handleBlur}
                                           />
                                         </td>
-                                        <td>
-                                          <i
-                                            className='bx bx-trash font-size-24 p-0 w-auto'
-                                            onClick={() =>
-                                              removeBoundaryConditionTableColumn(
-                                                position
-                                              )
-                                            }
-                                            style={{
-                                              cursor: 'pointer',
-                                              visibility:
-                                                position === 0
-                                                  ? 'hidden'
-                                                  : 'visible',
-                                            }}
-                                          />
-                                        </td>
                                       </tr>
                                     );
                                   })
                                 }
                               </FieldArray>
                             </tbody>
-                          </table>
-
-                          <div className='d-flex flex-column align-items-center'>
                             <i
                               onClick={() => {
                                 if (maxTables) return;
@@ -961,15 +961,11 @@ const WildfireSimulation = ({ handleResetAOI, setModalData, onSubmit }) => {
                               className='bx bx-plus-circle p-0 text-lg'
                               style={{
                                 cursor: 'pointer',
+                                alignSelf: 'center',
                                 fontSize: '2.5rem',
                               }}
                             />
-                            <span style={{ fontSize: '1rem' }}>
-                              {`${maxTables ? 'Cannot add' : 'Add'} new (max: ${
-                                values.hoursOfProjection
-                              })`}
-                            </span>
-                          </div>
+                          </table>
                         </FormGroup>
                       </Row>
 
