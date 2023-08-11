@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Row, Col, Modal, ModalHeader, ModalBody, Container } from 'reactstrap';
 import wkt from 'wkt';
 import { area } from '@turf/turf';
 import {
@@ -83,7 +83,7 @@ const App = () => {
 
   return (
     <div className='page-content'>
-      <div className='sign-up-aoi-map-bg'>
+      <Container className='sign-up-aoi-map-bg'>
         <Row>
           <Col xl={5} className='mb-3'>
             <Row className='d-flex align-items-baseline'>
@@ -99,7 +99,8 @@ const App = () => {
           setModalData={setModalData}
           onSubmit={onSubmit}
         />
-      </div>
+      </Container>
+
       <Modal
         centered
         isOpen={!!modalData}
