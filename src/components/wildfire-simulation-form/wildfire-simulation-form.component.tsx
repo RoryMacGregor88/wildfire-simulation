@@ -5,44 +5,43 @@ import wkt from 'wkt';
 import { Formik } from 'formik';
 import moment from 'moment';
 import { useAppDispatch, useAppSelector } from '~/hooks';
-import { Tooltip } from 'react-tooltip';
-import {
-  Button,
-  Input,
-  FormGroup,
-  Label,
-  Row,
-  Col,
-  Card,
-  Form,
-  Container,
-} from 'reactstrap';
+
+import { Button, Row, Col, Form, Container } from 'reactstrap';
 
 import {
   setSelectedFireBreak,
   selectedFireBreakSelector,
-  errorSelector,
 } from '~/store/app.slice';
-import {
-  getWKTfromFeature,
-  getGeneralErrors,
-  getError,
-  isWKTValid,
-  getGeoPolygon,
-} from '~/utils/utils';
+import { isWKTValid, getGeoPolygon } from '~/utils/utils';
 
 import WildfireSimulationSchema from './wildfire-simulation-form-schema';
 
-import { MapInput, MapCard } from '~/components';
-import {
-  DEFAULT_FIRE_BREAK_TYPE,
-  PROBABILITY_INFO,
-  PROBABILITY_RANGES,
-  MAX_GEOMETRY_AREA,
-} from '~/constants';
+import { DEFAULT_FIRE_BREAK_TYPE, MAX_GEOMETRY_AREA } from '~/constants';
 import BoundaryConditions from './boundary-conditions/boundary-conditions.component';
+import TopFormSection from './top-form-section';
+import FormMap from './form-map.component';
 
-const TABLE_INITIAL_STATE = [0];
+const TABLE_INITIAL_STATE = [0],
+  FORM_INITIAL_STATE = {
+    simulationTitle: '',
+    simulationDescription: '',
+    probabilityRange: 0.75,
+    mapSelection: [],
+    isMapAreaValid: true,
+    isValidWkt: true,
+    hoursOfProjection: 1,
+    ignitionDateTime: '',
+    simulationFireSpotting: false,
+    boundaryConditions: [
+      {
+        timeOffset: 0,
+        windDirection: '',
+        windSpeed: '',
+        fuelMoistureContent: '',
+        fireBreak: {},
+      },
+    ],
+  };
 
 const WildfireSimulation = ({ handleResetAOI, setModalData, onSubmit }) => {
   const dispatch = useAppDispatch();
@@ -52,7 +51,6 @@ const WildfireSimulation = ({ handleResetAOI, setModalData, onSubmit }) => {
     return areaIsValid;
   };
 
-  const error = useAppSelector(errorSelector);
   const selectedFireBreak = useAppSelector(selectedFireBreakSelector);
 
   /** to manage number of dynamic (vertical) table rows in `Boundary Conditions` */
@@ -172,8 +170,9 @@ const WildfireSimulation = ({ handleResetAOI, setModalData, onSubmit }) => {
     /** disable button's default 'submit' type, prevent form submitting prematurely */
     evt.preventDefault();
 
-    const isSelected = selectedFireBreak?.position === position;
-    const type = fireBreakSelectedOptions[position];
+    const isSelected = selectedFireBreak?.position === position,
+      type = fireBreakSelectedOptions[position];
+
     dispatch(setSelectedFireBreak(isSelected ? null : { position, type }));
   };
 
@@ -192,26 +191,7 @@ const WildfireSimulation = ({ handleResetAOI, setModalData, onSubmit }) => {
   return (
     <Row>
       <Formik
-        initialValues={{
-          simulationTitle: '',
-          simulationDescription: '',
-          probabilityRange: 0.75,
-          mapSelection: [],
-          isMapAreaValid: true,
-          isValidWkt: true,
-          hoursOfProjection: 1,
-          ignitionDateTime: '',
-          simulationFireSpotting: false,
-          boundaryConditions: [
-            {
-              timeOffset: 0,
-              windDirection: '',
-              windSpeed: '',
-              fuelMoistureContent: '',
-              fireBreak: {},
-            },
-          ],
-        }}
+        initialValues={FORM_INITIAL_STATE}
         validationSchema={WildfireSimulationSchema}
         validateOnChange
         onSubmit={onSubmit}
@@ -231,8 +211,9 @@ const WildfireSimulation = ({ handleResetAOI, setModalData, onSubmit }) => {
             tableEntries.length === Number(values.hoursOfProjection);
 
           const formProps = {
-            values,
             errors,
+            values,
+            touched,
             handleChange,
             handleBlur,
             setFieldValue,
@@ -245,398 +226,33 @@ const WildfireSimulation = ({ handleResetAOI, setModalData, onSubmit }) => {
             >
               <Container>
                 <Row>
+                  {/* Body of form, on left */}
                   <Col
                     xl={5}
                     className='d-flex flex-column justify-content-between'
                   >
-                    <Row>
-                      <Col className='d-flex align-items-center'>
-                        <h4>Request Map</h4>
-                      </Col>
-                      <Col className='d-flex justify-content-end align-items-center'>
-                        <Button
-                          color='link'
-                          onClick={handleResetAOI}
-                          className='p-0'
-                        >
-                          Default AOI
-                        </Button>
-                      </Col>
-                    </Row>
-
-                    <Row>{getGeneralErrors(error)}</Row>
-
-                    <Row xl={12}>
-                      <h5>Wildfire Simulation</h5>
-                    </Row>
-
-                    <Row>
-                      <FormGroup className='form-group'>
-                        <Label for='dataLayerType'>Simulation Title</Label>
-                        <Input
-                          name='simulationTitle'
-                          className={
-                            !!errors.simulationTitle ? 'is-invalid' : ''
-                          }
-                          id='simulationTitle'
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          value={values.simulationTitle}
-                          placeholder='[Type simulation title]'
-                        />
-                        {!!touched.simulationTitle &&
-                          getError({
-                            key: 'simulationTitle',
-                            errors,
-                            touched,
-                          })}
-                      </FormGroup>
-                    </Row>
-
-                    <Row>
-                      <FormGroup className='form-group'>
-                        <Label for='simulationDescription'>
-                          Simulation Description
-                        </Label>
-                        <Input
-                          id='simulationDescription'
-                          name='simulationDescription'
-                          type='textarea'
-                          rows={3}
-                          className={
-                            !!errors.simulationDescription ? 'is-invalid' : ''
-                          }
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          value={values.simulationDescription}
-                          placeholder='[Type simulation description]'
-                        />
-                        {!!touched.simulationDescription &&
-                          getError({
-                            key: 'simulationDescription',
-                            errors,
-                            touched,
-                          })}
-                      </FormGroup>
-                    </Row>
-
-                    <Row>
-                      <FormGroup className='d-flex-column'>
-                        <Row>
-                          <Label
-                            for='probabilityRange'
-                            className='d-flex align-items-center'
-                          >
-                            <Tooltip
-                              id='probabilityTooltip'
-                              place='right'
-                              className='alert-tooltip data-layers-alert-tooltip'
-                            >
-                              {PROBABILITY_INFO}
-                            </Tooltip>
-                            <i
-                              data-tooltip-id='probabilityTooltip'
-                              className='bx bx-info-circle font-size-8 p-0 me-1 cursor-pointer'
-                              style={{ cursor: 'pointer' }}
-                            />
-                            Probability Range
-                          </Label>
-                        </Row>
-                        <Row className='d-flex justify-content-start flex-nowrap gap-2'>
-                          {PROBABILITY_RANGES.map(({ label, value }) => (
-                            <Label
-                              key={label}
-                              id={label}
-                              check
-                              className='w-auto'
-                            >
-                              <Input
-                                id={label}
-                                name='probabilityRange'
-                                type='radio'
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                                checked={
-                                  Number(values.probabilityRange) === value
-                                }
-                                value={value}
-                                className='me-2'
-                              />
-                              {label}
-                            </Label>
-                          ))}
-                        </Row>
-                      </FormGroup>
-                    </Row>
-
-                    <Row>
-                      <FormGroup className='form-group'>
-                        <Label for='hoursOfProjection'>
-                          Hours Of Projection
-                        </Label>
-                        <Input
-                          name='hoursOfProjection'
-                          id='hoursOfProjection'
-                          className={
-                            !!errors.hoursOfProjection ? 'is-invalid' : ''
-                          }
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          value={values.hoursOfProjection}
-                          placeholder='[Type limit (hours)]'
-                        />
-                        {!!touched.hoursOfProjection &&
-                          getError({
-                            key: 'hoursOfProjection',
-                            errors,
-                            touched,
-                          })}
-                      </FormGroup>
-                    </Row>
-
-                    <Row>
-                      <FormGroup className='form-group'>
-                        <Label for='mapSelection'>Map Selection</Label>
-                        <MapInput
-                          className={!!errors.mapSelection ? 'is-invalid' : ''}
-                          id='mapSelection'
-                          name='mapSelection'
-                          type='textarea'
-                          rows='5'
-                          setCoordinates={(value) =>
-                            mapInputOnChange(value, setFieldValue)
-                          }
-                          setModalData={setModalData}
-                          onBlur={handleBlur}
-                          coordinates={getWKTfromFeature(values.mapSelection)}
-                          placeholder='[Paste Well-Known-Text (WKT)]'
-                        />
-                        {!!touched.mapSelection &&
-                          getError({
-                            key: 'mapSelection',
-                            errors,
-                            touched,
-                          })}
-                        {/* TODO: can just use !, not === false */}
-                        {values.isMapAreaValid === false &&
-                          getError({
-                            key: 'isMapAreaValid',
-                            errors,
-                            touched,
-                            validateOnChange: true,
-                          })}
-                        {!!values.mapSelection.length
-                          ? getError({
-                              key: 'isValidWkt',
-                              errors,
-                              touched,
-                              validateOnChange: true,
-                            })
-                          : null}
-                      </FormGroup>
-                    </Row>
-
-                    <Row className='mb-3 w-100'>
-                      <FormGroup className='form-group'>
-                        <Row>
-                          <Col>
-                            <Label for='ignitionDateTime'>
-                              Ignition Date Time
-                            </Label>
-                          </Col>
-                        </Row>
-                        <Row>
-                          <Col>
-                            <Input
-                              id='ignitionDateTime'
-                              name='ignitionDateTime'
-                              type='datetime-local'
-                              className={
-                                errors.ignitionDateTime ? 'is-invalid' : ''
-                              }
-                              onChange={({ target: { value } }) =>
-                                setFieldValue('ignitionDateTime', value)
-                              }
-                              onBlur={handleBlur}
-                              value={values.ignitionDateTime}
-                            />
-                          </Col>
-                          <Col>
-                            <Input
-                              type='datetime-local'
-                              disabled
-                              value={getDateOffset(
-                                values.ignitionDateTime,
-                                values.hoursOfProjection
-                              )}
-                            />
-                          </Col>
-                          {!!touched.ignitionDateTime &&
-                            getError({
-                              key: 'ignitionDateTime',
-                              errors,
-                              touched,
-                            })}
-                        </Row>
-                      </FormGroup>
-                    </Row>
-
-                    <Row
-                      xl={5}
-                      className='d-flex justify-content-between align-items-center flex-nowrap mb-3 w-100'
-                    >
-                      <FormGroup className='d-flex flex-nowrap align-items-center w-100'>
-                        <Label
-                          for='simulationFireSpotting'
-                          className='mb-0 me-3'
-                        >
-                          Simulation Fire Spotting
-                        </Label>
-                        <Input
-                          id='simulationFireSpotting'
-                          name='simulationFireSpotting'
-                          type='checkbox'
-                          onChange={handleChange}
-                          value={values.simulationFireSpotting}
-                          className='m-0'
-                          style={{ cursor: 'pointer' }}
-                        />
-                        {!!touched.simulationFireSpotting &&
-                          getError({
-                            key: 'simulationFireSpotting',
-                            errors,
-                            touched,
-                          })}
-                      </FormGroup>
-                    </Row>
+                    <TopFormSection
+                      handleResetAOI={handleResetAOI}
+                      mapInputOnChange={mapInputOnChange}
+                      setModalData={setModalData}
+                      getDateOffset={getDateOffset}
+                      {...formProps}
+                    />
                   </Col>
 
+                  {/* Map on right */}
                   <Col xl={7} className='mx-auto'>
-                    <Card
-                      className='map-card mb-0 position-relative'
-                      style={{ height: 670 }}
-                    >
-                      <MapCard
-                        isDrawingPolygon={!selectedFireBreak}
-                        coordinates={getAllGeojson(values)}
-                        handleAreaValidation={validateArea}
-                        setCoordinates={async (geoJson, isAreaValid) => {
-                          /** called if map is used to draw polygon */
-
-                          if (selectedFireBreak) {
-                            /** currently selected fireBreak object (data for all fireBreak types) */
-                            const existingFireBreakData =
-                              values.boundaryConditions?.[
-                                selectedFireBreak?.position
-                              ]?.fireBreak;
-
-                            /** current value of selected BoundaryCondition's select
-                             *  dropdown ('vehicle', 'canadair', etc)
-                             */
-                            const selectedFireBreakType =
-                              fireBreakSelectedOptions[
-                                selectedFireBreak?.position
-                              ];
-
-                            /** add id specific to A) which boundary condition, B) which fire
-                             * break type, and C) which position within feature array
-                             */
-                            const id = `${selectedFireBreakType}-${
-                              selectedFireBreak?.position
-                            }-${geoJson.length - 1}`;
-
-                            const newData = [
-                              ...(existingFireBreakData?.[
-                                selectedFireBreakType
-                              ] ?? []),
-                              {
-                                ...geoJson[geoJson.length - 1],
-                                properties: {
-                                  id,
-                                  fireBreakType: selectedFireBreakType,
-                                },
-                              },
-                            ];
-
-                            const updatedFireBreakData = {
-                              ...existingFireBreakData,
-                              [selectedFireBreakType]: newData,
-                            };
-
-                            setFieldValue(
-                              `boundaryConditions.${selectedFireBreak?.position}.fireBreak`,
-                              updatedFireBreakData
-                            );
-                          } else {
-                            await setFieldValue('mapSelection', geoJson);
-                            await setFieldValue('isMapAreaValid', isAreaValid);
-                            await setFieldValue('isValidWkt', true);
-                          }
-                        }}
-                        onSelect={(selected) => {
-                          const id = selected?.selectedFeature?.properties?.id;
-                          if (id) {
-                            const [type, position] = id.split('-');
-                            dispatch(
-                              setSelectedFireBreak({
-                                type,
-                                position: Number(position),
-                              })
-                            );
-                          }
-                        }}
-                        clearMap={(selectedFeatureData) => {
-                          const { properties, geometry } =
-                            selectedFeatureData.selectedFeature;
-
-                          if (geometry.type === 'Polygon') {
-                            setFieldValue('mapSelection', []);
-                            setFieldValue('isMapAreaValid', true);
-                            setFieldValue('isMapAreaValidWKT', true);
-                          } else {
-                            /**
-                             * id is specific to individual feature, so can be used for map and
-                             * also setCoords to determnine which to remove from form state
-                             */
-                            const deleteId = properties.id ?? null;
-
-                            const existingFireBreakData =
-                              values.boundaryConditions?.[
-                                selectedFireBreak?.position
-                              ]?.fireBreak;
-
-                            /**
-                             * current value of selected BoundaryCondition's select
-                             * ('vehicle', 'canadair', etc)
-                             */
-                            const selectedFireBreakType =
-                              fireBreakSelectedOptions[
-                                selectedFireBreak?.position
-                              ];
-
-                            /** filter out feature that has been deleted on map */
-                            const filteredData = existingFireBreakData?.[
-                              selectedFireBreakType
-                            ]?.filter(
-                              (feat) => feat.properties.id !== deleteId
-                            );
-
-                            const updatedFireBreakData = {
-                              ...existingFireBreakData,
-                              [selectedFireBreakType]: filteredData,
-                            };
-
-                            setFieldValue(
-                              `boundaryConditions.${selectedFireBreak?.position}.fireBreak`,
-                              updatedFireBreakData
-                            );
-                          }
-                        }}
-                      />
-                    </Card>
+                    <FormMap
+                      selectedFireBreak={selectedFireBreak}
+                      getAllGeojson={getAllGeojson}
+                      validateArea={validateArea}
+                      fireBreakSelectedOptions={fireBreakSelectedOptions}
+                      {...formProps}
+                    />
                   </Col>
                 </Row>
 
+                {/* Dynamic form rows, at bottom */}
                 <Row>
                   <BoundaryConditions
                     selectedFireBreak={selectedFireBreak}

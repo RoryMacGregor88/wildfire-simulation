@@ -220,42 +220,10 @@ const getGeoPolygon = (value) => {
   return [feature];
 };
 
-// TODO: move this, no JSX in utils
-const getGeneralErrors = (errors) => {
-  if (!errors) return '';
-
-  return (
-    <Card color='danger' className='text-white-50'>
-      <CardBody>
-        <CardTitle className='mb-4 text-white'>
-          <i className='mdi mdi-alert-outline me-3' />
-          Please fix the following error(s):
-        </CardTitle>
-        <List className='text-white'>{getErrorListItems(errors)}</List>
-      </CardBody>
-    </Card>
-  );
-};
-
-interface GetErrorArgs {
-  key: string;
-  errors: { [key: string]: string };
-  touched: { [key: string]: string };
-  errorStyle?: boolean;
-  validateOnChange?: boolean;
-}
-
-// TODO: same here, move
-const getError = ({
-  key,
-  errors,
-  touched,
-  validateOnChange = true,
-}: GetErrorArgs) => {
-  if (errors[key]) {
-    return <div className='invalid-feedback d-block'>{errors[key]}</div>;
-  }
-};
+// TODO: remove JSX?
+const Error = ({ message }: { message: string }) => (
+  <div className='invalid-feedback d-block w-auto'>{message ?? ''}</div>
+);
 
 export {
   getBoundedViewState,
@@ -268,6 +236,5 @@ export {
   isWKTValid,
   getPolygonLayerFromGeometry,
   getGeoPolygon,
-  getGeneralErrors,
-  getError,
+  Error,
 };

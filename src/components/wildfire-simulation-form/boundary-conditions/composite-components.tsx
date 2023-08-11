@@ -34,10 +34,4 @@ const AddBoundaryConditionIcon = ({
   />
 );
 
-const Error = ({ errorMessage }: { errorMessage: string }) => (
-  <div className='invalid-feedback d-block w-auto' style={{ height: '1rem' }}>
-    {errorMessage ?? ''}
-  </div>
-);
-
-export { TableHead, AddBoundaryConditionIcon, Error };
+export { TableHead, AddBoundaryConditionIcon };

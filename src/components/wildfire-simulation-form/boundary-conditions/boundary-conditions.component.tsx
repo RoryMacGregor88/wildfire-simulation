@@ -2,31 +2,28 @@ import { FieldArray } from 'formik';
 import { FormGroup, Label, Input } from 'reactstrap';
 import { FIRE_BREAK_OPTIONS } from '~/constants';
 import { setSelectedFireBreak } from '~/store/app.slice';
-import { getWKTfromFeature } from '~/utils/utils';
+import { getWKTfromFeature, Error } from '~/utils/utils';
 import { useAppDispatch } from '~/hooks';
-import {
-  TableHead,
-  AddBoundaryConditionIcon,
-  Error,
-} from './composite-components';
+import { TableHead, AddBoundaryConditionIcon } from './composite-components';
 
 const BoundaryConditionColumn = ({
   position,
-  errors,
-  values,
-  handleChange,
   selectedFireBreak,
   removeBoundaryConditionTableColumn,
   fireBreakSelectedOptions,
   handleFireBreakEditClick,
+  ...formProps
 }) => {
   const dispatch = useAppDispatch();
+
+  const { errors, values, touched, handleChange, handleBlur } = formProps;
 
   const isFireBreakSelected = position === selectedFireBreak?.position;
 
   const baseFormId = `boundaryConditions.${position}`,
     baseValues = values.boundaryConditions[position] ?? {},
-    baseErrors = errors.boundaryConditions?.[position] ?? {};
+    baseErrors = errors.boundaryConditions?.[position] ?? {},
+    baseTouched = touched.boundaryConditions?.[position] ?? {};
 
   const handleFireBreakChange = ({ target: { value } }) =>
     dispatch(
@@ -57,8 +54,12 @@ const BoundaryConditionColumn = ({
           disabled={position === 0}
           placeholder='[Type value]'
           onChange={handleChange}
+          onBlur={handleBlur}
         />
-        <Error errorMessage={baseErrors.timeOffset} />
+
+        {!!baseTouched.timeOffset ? (
+          <Error message={baseErrors.timeOffset} />
+        ) : null}
       </td>
 
       <td>
@@ -68,8 +69,11 @@ const BoundaryConditionColumn = ({
           value={baseValues.windDirection}
           placeholder='[Type value]'
           onChange={handleChange}
+          onBlur={handleBlur}
         />
-        <Error errorMessage={baseErrors.windDirection} />
+        {!!baseTouched.windDirection ? (
+          <Error message={baseErrors.windDirection} />
+        ) : null}
       </td>
 
       <td>
@@ -79,8 +83,12 @@ const BoundaryConditionColumn = ({
           value={baseValues.windSpeed}
           placeholder='[Type value]'
           onChange={handleChange}
+          onBlur={handleBlur}
         />
-        <Error errorMessage={baseErrors.windSpeed} />
+
+        {!!baseTouched.windSpeed ? (
+          <Error message={baseErrors.windSpeed} />
+        ) : null}
       </td>
 
       <td>
@@ -90,8 +98,12 @@ const BoundaryConditionColumn = ({
           value={baseValues.fuelMoistureContent}
           placeholder='[Type value]'
           onChange={handleChange}
+          onBlur={handleBlur}
         />
-        <Error errorMessage={baseErrors.fuelMoistureContent} />
+
+        {!!baseTouched.fuelMoistureContent ? (
+          <Error message={baseErrors.fuelMoistureContent} />
+        ) : null}
       </td>
 
       <td>
@@ -104,6 +116,7 @@ const BoundaryConditionColumn = ({
             className='btn-sm sort-select-input'
             value={fireBreakSelectedOptions[position]}
             onChange={handleFireBreakChange}
+            onBlur={handleBlur}
           >
             {FIRE_BREAK_OPTIONS.map(({ label, value }) => (
               <option key={label} value={value}>
