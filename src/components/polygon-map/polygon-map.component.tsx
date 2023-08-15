@@ -3,38 +3,32 @@ import React, { useState } from 'react';
 import { MapView } from '@deck.gl/core';
 import MapGL, {
   FullscreenControl,
-  NavigationControl,
   MapContext,
+  NavigationControl,
 } from 'react-map-gl';
-import {
-  Editor,
-  DrawPolygonMode,
-  DrawLineStringMode,
-  EditingMode,
-  RENDER_STATE,
-} from 'react-map-gl-draw';
-import { MapStyleSwitcher } from '~/components';
-import { useAppDispatch, useAppSelector, useMap } from '~/hooks';
+import { Editor, RENDER_STATE } from 'react-map-gl-draw';
 
-import { FIRE_BREAK_STROKE_COLORS } from '~/constants';
+import { MapStyleSwitcher } from '~/components';
 import {
-  selectedMapStyleSelector,
+  DRAW_TYPES,
+  MAPBOX_TOKEN,
+  MODES,
+  NAV_CONTROL_POSITION,
+  POINT_RADIUS,
+  POLYGON_ERROR_COLOR,
+  POLYGON_FILL_COLOR,
+  POLYGON_LINE_COLOR,
+  POLYGON_LINE_DASH,
+  SCREEN_CONTROL_POSITION,
+  TRANSPARENT_COLOR,
+} from '~/components/polygon-map/constants';
+import { FIRE_BREAK_STROKE_COLORS } from '~/constants';
+import { useAppDispatch, useAppSelector, useMap } from '~/hooks';
+import {
   mapStylesSelector,
+  selectedMapStyleSelector,
   setSelectedMapStyle,
 } from '~/store/app.slice';
-
-const SCREEN_CONTROL_POSITION = '';
-const NAV_CONTROL_POSITION = 'bottom-right';
-
-const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
-
-const POLYGON_LINE_COLOR = 'rgb(26,115,232)';
-const POLYGON_FILL_COLOR = 'rgba(255, 255, 255, 0.5)';
-const POLYGON_LINE_DASH = '10,2';
-const POLYGON_ERROR_COLOR = 'rgba(255, 0, 0, 0.5)';
-const TRANSPARENT_COLOR = 'rgba(0, 0, 0, 0)';
-
-const POINT_RADIUS = 8;
 
 const getPosition = (position: string) => {
   const [y, x] = position.split('-');
@@ -60,22 +54,6 @@ const PolygonMap = ({
   const mapStyles = useAppSelector(mapStylesSelector);
   const selectedMapStyle = useAppSelector(selectedMapStyleSelector);
 
-  const MODES = [
-    { id: 'editing', text: 'Edit Feature', handler: EditingMode },
-    { id: 'drawPolygon', text: 'Draw Polygon', handler: DrawPolygonMode },
-    {
-      id: 'drawLineString',
-      text: 'Draw Line String',
-      handler: DrawLineStringMode,
-    },
-  ];
-
-  const DRAW_TYPES = {
-    LINE_STRING: 'drawLineString',
-    POLYGON: 'drawPolygon',
-    EDITING: 'editing',
-  };
-
   const [mode, setMode] = useState({});
 
   const [selectedFeatureData, setSelectedFeatureData] = useState(null);
@@ -96,7 +74,7 @@ const PolygonMap = ({
   const editToggle = (mode) => {
     if (mode === DRAW_TYPES.LINE_STRING) {
       toggleMode(
-        modeId === DRAW_TYPES.LINE_STRING ? 'editing' : DRAW_TYPES.LINE_STRING
+        modeId === DRAW_TYPES.LINE_STRING ? 'editing' : DRAW_TYPES.LINE_STRING,
       );
     } else if (mode === DRAW_TYPES.POLYGON) {
       /** clear map before drawig new polygon */
@@ -105,7 +83,7 @@ const PolygonMap = ({
         setCoordinates([]);
       }
       toggleMode(
-        modeId === DRAW_TYPES.POLYGON ? 'editing' : DRAW_TYPES.POLYGON
+        modeId === DRAW_TYPES.POLYGON ? 'editing' : DRAW_TYPES.POLYGON,
       );
     }
   };
@@ -124,12 +102,12 @@ const PolygonMap = ({
     children,
   }) => (
     <div style={{ position: 'absolute', top, right: '10px' }}>
-      <div className='mapboxgl-ctrl mapboxgl-ctrl-group'>
+      <div className="mapboxgl-ctrl mapboxgl-ctrl-group">
         <button
+          className="mapboxgl-ctrl-icon d-flex justify-content-center align-items-center"
           style={{ ...style }}
+          type="button"
           onClick={onClick}
-          className='mapboxgl-ctrl-icon d-flex justify-content-center align-items-center'
-          type='button'
         >
           {children}
         </button>
@@ -200,41 +178,41 @@ const PolygonMap = ({
     <>
       <MapGL
         {...viewState}
-        mapboxApiAccessToken={MAPBOX_TOKEN}
-        mapStyle={selectedMapStyle.uri}
         ContextProvider={MapContext.Provider}
-        onViewStateChange={({ viewState }) => updateViewState(viewState)}
+        height="100%"
+        mapStyle={selectedMapStyle.uri}
+        mapboxApiAccessToken={MAPBOX_TOKEN}
         views={new MapView({ repeat: true })}
-        width='100%'
-        height='100%'
+        width="100%"
+        onViewStateChange={({ viewState }) => updateViewState(viewState)}
       >
         <Editor
           clickRadius={12}
-          mode={modeHandler}
-          features={coordinates}
-          onUpdate={handleUpdate}
-          onSelect={handleSelect}
           featureStyle={getfeatureStyle}
+          features={coordinates}
+          mode={modeHandler}
+          onSelect={handleSelect}
+          onUpdate={handleUpdate}
         />
         <MapStyleSwitcher
           mapStyles={mapStyles}
-          selectedMapStyle={selectedMapStyle}
           selectMapStyle={handleSelectMapStyle}
+          selectedMapStyle={selectedMapStyle}
         />
 
         <FullscreenControl style={getPosition(SCREEN_CONTROL_POSITION)} />
 
         <NavigationControl
-          style={getPosition(NAV_CONTROL_POSITION)}
           showCompass={false}
+          style={getPosition(NAV_CONTROL_POSITION)}
         />
 
         <>
           <MapControlButton
-            top='50px'
             style={{
               backgroundColor: modeId === selectedDrawType ? 'lightgray' : '',
             }}
+            top="50px"
             onClick={() => editToggle(selectedDrawType)}
           >
             <i
@@ -246,7 +224,7 @@ const PolygonMap = ({
           </MapControlButton>
 
           <MapControlButton onClick={handleClearMap}>
-            <i className='bx bx-trash' style={{ fontSize: '20px' }}></i>
+            <i className="bx bx-trash" style={{ fontSize: '20px' }}></i>
           </MapControlButton>
         </>
       </MapGL>
