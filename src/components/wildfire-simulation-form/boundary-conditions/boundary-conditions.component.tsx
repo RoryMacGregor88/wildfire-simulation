@@ -2,9 +2,9 @@ import { FieldArray } from 'formik';
 import { FormGroup, Label } from 'reactstrap';
 
 import {
-  TableHead,
   AddBoundaryConditionIcon,
   BoundaryConditionColumn,
+  TableHead,
 } from '~/components';
 
 const BoundaryConditions = (props) => {
@@ -18,17 +18,17 @@ const BoundaryConditions = (props) => {
   } = props;
 
   return (
-    <FormGroup className='form-group'>
-      <Label for='boundaryConditions' className='m-0'>
+    <FormGroup className="form-group">
+      <Label className="m-0" for="boundaryConditions">
         Boundary Conditions (bound to 'Hours Of Projection')
       </Label>
 
-      <div className='d-flex'>
-        <table className='on-demand-table align-content-between'>
+      <div className="d-flex">
+        <table className="on-demand-table align-content-between">
           <TableHead />
 
-          <tbody>
-            <FieldArray name='boundaryConditions'>
+          <tbody style={{ maxWidth: '90rem' }}>
+            <FieldArray name="boundaryConditions">
               {() =>
                 tableEntries.map((position: number) => (
                   <BoundaryConditionColumn
@@ -43,10 +43,10 @@ const BoundaryConditions = (props) => {
         </table>
 
         <AddBoundaryConditionIcon
-          values={values}
-          maxTables={maxTables}
           addBoundaryConditionTableColumn={addBoundaryConditionTableColumn}
+          maxTables={maxTables}
           setFieldValue={setFieldValue}
+          values={values}
         />
       </div>
     </FormGroup>
