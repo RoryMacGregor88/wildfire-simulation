@@ -15,7 +15,7 @@ Yup.addMethod(Yup.number, 'uniqueTimeOffset', function (message) {
      * to furthest relatives. [0] is the immediate parent object,
      * while [1] is the higher parent array of all of those objects.
      */
-    const allTimeOffsets = from[1].value.boundaryConditions.map((datum) =>
+    const allTimeOffsets = from?.[1].value.boundaryConditions.map((datum) =>
       Number(datum.timeOffset)
     );
 
@@ -37,7 +37,7 @@ Yup.addMethod(Yup.number, 'matchHoursToBoundaryConditions', function (message) {
     'matchHoursToBoundaryConditions',
     message,
     (hours, { from }) => {
-      const boundaryConditionCount = from[0].value.boundaryConditions.length;
+      const boundaryConditionCount = from?.[0].value.boundaryConditions.length;
       return Number(hours) >= boundaryConditionCount;
     }
   );

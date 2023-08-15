@@ -1,10 +1,12 @@
 import React, {
+  ReactNode,
   createContext,
   useCallback,
   useContext,
-  useRef,
   useState,
 } from 'react';
+
+import { ViewState, MapContextValue } from '~/types';
 
 export const INITIAL_VIEW_STATE = {
   longitude: 9.56005296,
@@ -17,24 +19,15 @@ export const INITIAL_VIEW_STATE = {
 export const MapContext = createContext(undefined);
 MapContext.displayName = 'MapContext';
 
-/**
- * @typedef {Object} MapContextType
- * @property {React.MutableRefObject<import('react-map-gl').StaticMap>} mapRef
- * @property {React.MutableRefObject<import('@deck.gl/core').Deck>} deckRef
- */
+interface Props {
+  children: ReactNode;
+}
 
-/**
- * @param {{children: React.ReactNode}} props
- * @returns {JSX.Element} MapContextProvider
- */
-// eslint-disable-next-line react/prop-types
-export const MapProvider = (props) => {
-  const mapRef = useRef(null);
-  const deckRef = useRef(null);
+export const MapProvider = ({ children }: Props) => {
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
 
   const updateViewState = useCallback(
-    (newViewState) =>
+    (newViewState: Partial<ViewState>) =>
       setViewState((currentViewState) => ({
         ...currentViewState,
         ...newViewState,
@@ -42,33 +35,15 @@ export const MapProvider = (props) => {
     []
   );
 
-  const resetViewState = useCallback(
-    () => setViewState(INITIAL_VIEW_STATE),
-    []
-  );
+  const value: MapContextValue = {
+    viewState,
+    updateViewState,
+  };
 
-  return (
-    <MapContext.Provider
-      value={{
-        mapRef,
-        deckRef,
-        viewState,
-        setViewState,
-        updateViewState,
-        resetViewState,
-      }}
-      {...props}
-    />
-  );
+  return <MapContext.Provider value={value}>{children}</MapContext.Provider>;
 };
 
-/**
- * @returns {{
- *   mapRef: React.MutableRefObject<import('react-map-gl').StaticMap>
- *   deckRef: React.MutableRefObject<import('@deck.gl/core').Deck>
- * }}
- */
-export const useMap = () => {
+export const useMap = (): MapContextValue => {
   /**
    * @type {MapContextType}
    */

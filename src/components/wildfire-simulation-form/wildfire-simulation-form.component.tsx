@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 
 import { area } from '@turf/turf';
+import { Feature } from '@turf/helpers';
 import wkt from 'wkt';
 import { Formik } from 'formik';
 import moment from 'moment';
@@ -17,9 +18,8 @@ import { isWKTValid, getGeoPolygon } from '~/utils/utils';
 import WildfireSimulationSchema from './wildfire-simulation-form-schema';
 
 import { DEFAULT_FIRE_BREAK_TYPE, MAX_GEOMETRY_AREA } from '~/constants';
-import BoundaryConditions from './boundary-conditions/boundary-conditions.component';
-import TopFormSection from './top-form-section';
-import FormMap from './form-map.component';
+
+import { TopFormSection, FormMap, BoundaryConditions } from '~/components';
 
 const TABLE_INITIAL_STATE = [0],
   FORM_INITIAL_STATE = {
@@ -46,21 +46,19 @@ const TABLE_INITIAL_STATE = [0],
 const WildfireSimulation = ({ handleResetAOI, setModalData, onSubmit }) => {
   const dispatch = useAppDispatch();
 
-  const validateArea = (feature) => {
-    const areaIsValid = Math.ceil(area(feature)) <= MAX_GEOMETRY_AREA.value;
-    return areaIsValid;
-  };
+  const validateArea = (feature: Feature) =>
+    Math.ceil(area(feature)) <= MAX_GEOMETRY_AREA.value;
 
   const selectedFireBreak = useAppSelector(selectedFireBreakSelector);
 
-  /** to manage number of dynamic (vertical) table rows in `Boundary Conditions` */
+  /** To manage number of dynamic (vertical) table rows in `Boundary Conditions` */
   const [tableEntries, setTableEntries] = useState(TABLE_INITIAL_STATE);
 
   const [fireBreakSelectedOptions, setFireBreakSelectedOptions] = useState({
     0: DEFAULT_FIRE_BREAK_TYPE,
   });
 
-  /** reset global state when form is closed */
+  /** Reset global state when form is closed */
   useEffect(() => {
     const cleanup = () => {
       dispatch(setSelectedFireBreak(null));
@@ -70,7 +68,7 @@ const WildfireSimulation = ({ handleResetAOI, setModalData, onSubmit }) => {
   }, [dispatch]);
 
   /**
-   * side effect used so that select value can be controlled by both
+   * Side effect used so that select value can be controlled by both
    * the select itself and the map features when selected
    */
   useEffect(() => {
@@ -87,12 +85,12 @@ const WildfireSimulation = ({ handleResetAOI, setModalData, onSubmit }) => {
    * This is never called from drawing on map, only if
    * typed/pasted directly into field
    */
-  const mapInputOnChange = (value, setFieldValue) => {
+  const mapInputOnChange = async (value, setFieldValue) => {
     /**
      * WKT converted to GeoJson for storage in form values,
      * is converted back to WKT to be displayed in form field
      */
-    setFieldValue('mapSelection', getGeoPolygon(value));
+    await setFieldValue('mapSelection', getGeoPolygon(value));
 
     /**
      * The below section is here because the field value
@@ -102,50 +100,58 @@ const WildfireSimulation = ({ handleResetAOI, setModalData, onSubmit }) => {
 
     /** User has cleared input, remove area validation error */
     if (!value) {
-      setFieldValue('isMapAreaValid', true);
+      await setFieldValue('isMapAreaValid', true);
     } else {
       const isWktValid = isWKTValid(value);
-      setFieldValue('isValidWkt', isWktValid);
+      await setFieldValue('isValidWkt', isWktValid);
 
       const features = wkt.parse(value);
       if (features) {
         const isAreaValid = validateArea(features);
-        setFieldValue('isMapAreaValid', isAreaValid);
+        await setFieldValue('isMapAreaValid', isAreaValid);
       }
     }
   };
 
-  const clearForm = (resetForm) => {
+  const clearForm = (resetForm: () => void) => {
     setTableEntries(TABLE_INITIAL_STATE);
     resetForm();
   };
 
-  /** used to compute end date from start date and number of hours */
-  const getDateOffset = (startTime, numberHours) => {
-    if (!startTime || !numberHours) return;
+  interface GetDateOffsetArgs {
+    startTime: Date;
+    offset: number;
+  }
+
+  /** Used to compute end date from start date and number of hours */
+  const getDateOffset = ({ startTime, offset }: GetDateOffsetArgs) => {
+    if (!startTime || !offset) return;
 
     const endTime = moment(startTime)
-      .add(numberHours, 'hours')
+      .add(offset, 'hours')
       .toISOString()
       .slice(0, 19);
 
     return endTime;
   };
 
-  const addBoundaryConditionTableColumn = (
+  const addBoundaryConditionTableColumn = async (
     setFieldValue: (field: string, value: any) => void
   ) => {
     const nextIndex = tableEntries.length;
     setTableEntries([...tableEntries, nextIndex]);
 
     /**
-     * registers the new boundary condition row, so that it can
+     * Register new boundary condition row, so that it can
      * be detected by validator functions
      */
-    setFieldValue(`boundaryConditions.${nextIndex}.timeOffset`, nextIndex);
+    await setFieldValue(
+      `boundaryConditions.${nextIndex}.timeOffset`,
+      nextIndex
+    );
 
     /**
-     * add selected fire break key for boundary condition
+     * Add selected fire break key for boundary condition
      * when new boundary condition is created
      */
     setFireBreakSelectedOptions((prev) => ({
@@ -154,20 +160,21 @@ const WildfireSimulation = ({ handleResetAOI, setModalData, onSubmit }) => {
     }));
   };
 
-  const removeBoundaryConditionTableColumn = (position) => {
+  const removeBoundaryConditionTableColumn = async (position: number) => {
     setTableEntries(tableEntries.filter((entry) => entry !== position));
 
-    /** remove selected fire break key for boundary condition when it is deleted */
+    /** Remove selected fire break key for boundary condition when it is deleted */
     setFireBreakSelectedOptions((prev) =>
       Object.entries(prev).reduce(
-        (acc, [k, v]) => (Number(k) === position ? acc : { ...acc, [k]: v }),
+        (acc, [key, value]) =>
+          Number(key) === position ? acc : { ...acc, [key]: value },
         {}
       )
     );
   };
 
-  const handleFireBreakEditClick = (evt, position) => {
-    /** disable button's default 'submit' type, prevent form submitting prematurely */
+  const handleFireBreakEditClick = (evt: Event, position: number) => {
+    /** Disable button's default 'submit' type, prevent form submitting prematurely */
     evt.preventDefault();
 
     const isSelected = selectedFireBreak?.position === position,
@@ -180,7 +187,7 @@ const WildfireSimulation = ({ handleResetAOI, setModalData, onSubmit }) => {
     const { mapSelection, boundaryConditions } = formValues;
 
     const fireBreaks = boundaryConditions.reduce((acc, cur) => {
-      /** will be sub-array of features if more than one line drawn */
+      /** Will be sub-array of features if more than one line drawn */
       const features = Object.values(cur.fireBreak ?? {}).flat();
       return [...acc, ...features];
     }, []);

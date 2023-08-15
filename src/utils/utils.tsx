@@ -27,8 +27,10 @@ const ALERT_TYPES = {
 const getBoundedViewState = (deckRef, bbox) => {
   const viewport = deckRef.current.deck;
   const { width, height } = viewport;
-  // padding reduced. This was set too high, causing a
-  // deckGL assertion that image was too small to display
+  /**
+   * padding reduced. This was set too high, causing a
+   * deckGL assertion that image was too small to display
+   */
   const padding = 50;
 
   const [minX, minY, maxX, maxY] = bbox;
@@ -184,8 +186,10 @@ const isWKTValid = (wktString: string): boolean => {
 };
 
 const getPolygonLayerFromGeometry = (geometry) => {
-  // fetch polygon for arbitrary polygonal geometry
-  // e.g. AOI for a data layer
+  /**
+   * fetch polygon for arbitrary polygonal geometry,
+   * for example, AOI for a data layer
+   */
   return new PolygonLayer({
     data: geometry.coordinates,
     pickable: true,
@@ -220,11 +224,6 @@ const getGeoPolygon = (value) => {
   return [feature];
 };
 
-// TODO: remove JSX?
-const Error = ({ message }: { message: string }) => (
-  <div className='invalid-feedback d-block w-auto'>{message ?? ''}</div>
-);
-
 export {
   getBoundedViewState,
   getViewState,
@@ -236,5 +235,4 @@ export {
   isWKTValid,
   getPolygonLayerFromGeometry,
   getGeoPolygon,
-  Error,
 };
