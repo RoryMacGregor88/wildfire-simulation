@@ -1,6 +1,6 @@
 import {
-  DrawPolygonMode,
   DrawLineStringMode,
+  DrawPolygonMode,
   EditingMode,
 } from 'react-map-gl-draw';
 

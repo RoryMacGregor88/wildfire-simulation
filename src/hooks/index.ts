@@ -1,13 +1,13 @@
-import {
-  MapContext,
-  MapProvider,
-  useMap,
-  INITIAL_VIEW_STATE,
-} from './map-context/map-context';
-
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 
 import type { AppDispatch, RootState } from '~/store';
+
+import {
+  INITIAL_VIEW_STATE,
+  MapContext,
+  MapProvider,
+  useMap,
+} from './map-context/map-context';
 
 export { INITIAL_VIEW_STATE };
 

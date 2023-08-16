@@ -18,17 +18,17 @@ const BoundaryConditions = (props) => {
   } = props;
 
   return (
-    <FormGroup className="form-group">
-      <Label className="m-0" for="boundaryConditions">
-        Boundary Conditions (bound to 'Hours Of Projection')
+    <FormGroup className='form-group'>
+      <Label className='m-0' for='boundaryConditions'>
+        Boundary Conditions (bound to &apos;Hours Of Projection&apos;)
       </Label>
 
-      <div className="d-flex">
-        <table className="on-demand-table align-content-between">
+      <div className='d-flex'>
+        <table className='on-demand-table align-content-between'>
           <TableHead />
 
           <tbody style={{ maxWidth: '90rem' }}>
-            <FieldArray name="boundaryConditions">
+            <FieldArray name='boundaryConditions'>
               {() =>
                 tableEntries.map((position: number) => (
                   <BoundaryConditionColumn

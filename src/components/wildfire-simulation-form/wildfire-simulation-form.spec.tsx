@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { screen, render, userEvent, fireEvent, waitFor, act } from 'test-utils';
+import { fireEvent, render, screen, userEvent, waitFor } from 'test-utils';
 
 import WildfireSimulation from './WildfireSimulation';
 
@@ -11,10 +11,8 @@ const TEST_VALID_WKT =
 
 const renderComponent = (state = {}) => {
   const props = {
-    t: str => str,
     handleResetAOI: jest.fn(),
-    backToOnDemandPanel: jest.fn(),
-    mapInputOnChange: jest.fn(),
+    setModalData: jest.fn(),
     onSubmit: jest.fn(),
   };
 

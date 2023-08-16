@@ -1,8 +1,6 @@
-import { Button, Card, Col, FormGroup, Input, Label, Row } from 'reactstrap';
 import { Tooltip } from 'react-tooltip';
-import { setSelectedFireBreak } from '~/store/app.slice';
-import { getWKTfromFeature } from '~/utils/utils';
-import { useAppDispatch } from '~/hooks';
+import { Button, Card, Col, FormGroup, Input, Label, Row } from 'reactstrap';
+
 import { Error, MapInput, PolygonMap } from '~/components';
 import {
   BOUNDARY_CONDITIONS_TABLE_HEADERS,
@@ -10,6 +8,9 @@ import {
   PROBABILITY_INFO,
   PROBABILITY_RANGES,
 } from '~/constants';
+import { useAppDispatch } from '~/hooks';
+import { setSelectedFireBreak } from '~/store/app.slice';
+import { getWKTfromFeature } from '~/utils/utils';
 
 /** Form section on left */
 const TopFormSection = ({
@@ -32,7 +33,7 @@ const TopFormSection = ({
           <h4>Request Map</h4>
         </Col>
         <Col className='d-flex justify-content-end align-items-center'>
-          <Button color='link' onClick={handleResetAOI} className='p-0'>
+          <Button className='p-0' color='link' onClick={handleResetAOI}>
             Default AOI
           </Button>
         </Col>
@@ -46,13 +47,13 @@ const TopFormSection = ({
         <FormGroup className='form-group'>
           <Label for='dataLayerType'>Simulation Title</Label>
           <Input
-            name='simulationTitle'
             className={!!errors.simulationTitle ? 'is-invalid' : ''}
             id='simulationTitle'
-            onChange={handleChange}
-            onBlur={handleBlur}
-            value={values.simulationTitle}
+            name='simulationTitle'
             placeholder='[Type simulation title]'
+            value={values.simulationTitle}
+            onBlur={handleBlur}
+            onChange={handleChange}
           />
 
           {!!touched.simulationTitle ? (
@@ -65,15 +66,15 @@ const TopFormSection = ({
         <FormGroup className='form-group'>
           <Label for='simulationDescription'>Simulation Description</Label>
           <Input
+            className={!!errors.simulationDescription ? 'is-invalid' : ''}
             id='simulationDescription'
             name='simulationDescription'
-            type='textarea'
-            rows={3}
-            className={!!errors.simulationDescription ? 'is-invalid' : ''}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            value={values.simulationDescription}
             placeholder='[Type simulation description]'
+            rows={3}
+            type='textarea'
+            value={values.simulationDescription}
+            onBlur={handleBlur}
+            onChange={handleChange}
           />
 
           {!!touched.simulationDescription ? (
@@ -85,17 +86,17 @@ const TopFormSection = ({
       <Row>
         <FormGroup className='d-flex-column'>
           <Row>
-            <Label for='probabilityRange' className='d-flex align-items-center'>
+            <Label className='d-flex align-items-center' for='probabilityRange'>
               <Tooltip
+                className='alert-tooltip data-layers-alert-tooltip'
                 id='probabilityTooltip'
                 place='right'
-                className='alert-tooltip data-layers-alert-tooltip'
               >
                 {PROBABILITY_INFO}
               </Tooltip>
               <i
-                data-tooltip-id='probabilityTooltip'
                 className='bx bx-info-circle font-size-8 p-0 me-1 cursor-pointer'
+                data-tooltip-id='probabilityTooltip'
                 style={{ cursor: 'pointer' }}
               />
               Probability Range
@@ -104,16 +105,16 @@ const TopFormSection = ({
 
           <Row className='d-flex justify-content-start flex-nowrap gap-2'>
             {PROBABILITY_RANGES.map(({ label, value }) => (
-              <Label key={label} id={label} check className='w-auto'>
+              <Label key={label} check className='w-auto' id={label}>
                 <Input
+                  checked={Number(values.probabilityRange) === value}
+                  className='me-2'
                   id={label}
                   name='probabilityRange'
                   type='radio'
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  checked={Number(values.probabilityRange) === value}
                   value={value}
-                  className='me-2'
+                  onBlur={handleBlur}
+                  onChange={handleChange}
                 />
                 {label}
               </Label>
@@ -126,13 +127,13 @@ const TopFormSection = ({
         <FormGroup className='form-group'>
           <Label for='hoursOfProjection'>Hours Of Projection</Label>
           <Input
-            name='hoursOfProjection'
-            id='hoursOfProjection'
             className={!!errors.hoursOfProjection ? 'is-invalid' : ''}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            value={values.hoursOfProjection}
+            id='hoursOfProjection'
+            name='hoursOfProjection'
             placeholder='[Type limit (hours)]'
+            value={values.hoursOfProjection}
+            onBlur={handleBlur}
+            onChange={handleChange}
           />
 
           {!!touched.hoursOfProjection ? (
@@ -146,15 +147,15 @@ const TopFormSection = ({
           <Label for='mapSelection'>Map Selection</Label>
           <MapInput
             className={!!errors.mapSelection ? 'is-invalid' : ''}
+            coordinates={getWKTfromFeature(values.mapSelection)}
             id='mapSelection'
             name='mapSelection'
-            type='textarea'
+            placeholder='[Paste Well-Known-Text (WKT)]'
             rows='5'
             setCoordinates={(value) => mapInputOnChange(value, setFieldValue)}
             setModalData={setModalData}
+            type='textarea'
             onBlur={handleBlur}
-            coordinates={getWKTfromFeature(values.mapSelection)}
-            placeholder='[Paste Well-Known-Text (WKT)]'
           />
           {!!touched.mapSelection ? (
             <Error message={errors.mapSelection} />
@@ -175,19 +176,19 @@ const TopFormSection = ({
           <Row>
             <Col>
               <Input
+                className={errors.ignitionDateTime ? 'is-invalid' : ''}
                 id='ignitionDateTime'
                 name='ignitionDateTime'
                 type='datetime-local'
-                className={errors.ignitionDateTime ? 'is-invalid' : ''}
-                onChange={handleDateChange}
-                onBlur={handleBlur}
                 value={values.ignitionDateTime}
+                onBlur={handleBlur}
+                onChange={handleDateChange}
               />
             </Col>
             <Col>
               <Input
-                type='datetime-local'
                 disabled
+                type='datetime-local'
                 value={getDateOffset({
                   startTime: values.ignitionDateTime,
                   offset: values.hoursOfProjection,
@@ -203,21 +204,21 @@ const TopFormSection = ({
       </Row>
 
       <Row
-        xl={5}
         className='d-flex justify-content-between align-items-center flex-nowrap mb-3 w-100'
+        xl={5}
       >
         <FormGroup className='d-flex flex-nowrap align-items-center w-100'>
-          <Label for='simulationFireSpotting' className='mb-0 me-3'>
+          <Label className='mb-0 me-3' for='simulationFireSpotting'>
             Simulation Fire Spotting
           </Label>
           <Input
+            className='m-0'
             id='simulationFireSpotting'
             name='simulationFireSpotting'
-            type='checkbox'
-            onChange={handleChange}
-            value={values.simulationFireSpotting}
-            className='m-0'
             style={{ cursor: 'pointer' }}
+            type='checkbox'
+            value={values.simulationFireSpotting}
+            onChange={handleChange}
           />
 
           {!!touched.simulationFireSpotting ? (
@@ -297,7 +298,7 @@ const FormMap = ({
         setSelectedFireBreak({
           type,
           position: Number(position),
-        })
+        }),
       );
     }
   };
@@ -344,12 +345,12 @@ const FormMap = ({
   return (
     <Card className='map-card mb-0' style={{ height: 730 }}>
       <PolygonMap
-        isDrawingPolygon={!selectedFireBreak}
-        coordinates={getAllGeojson(values)}
-        validateArea={validateArea}
-        setCoordinates={setCoordinates}
-        onSelect={onSelect}
         clearMap={clearMap}
+        coordinates={getAllGeojson(values)}
+        isDrawingPolygon={!selectedFireBreak}
+        setCoordinates={setCoordinates}
+        validateArea={validateArea}
+        onSelect={onSelect}
       />
     </Card>
   );
@@ -379,14 +380,14 @@ const AddBoundaryConditionIcon = ({
 }) => (
   <div className='d-flex align-items-center justify-center gap-2'>
     <i
-      onClick={() => {
-        if (maxTables) return;
-        addBoundaryConditionTableColumn(setFieldValue);
-      }}
       className='bx bx-plus-circle p-0 text-lg'
       style={{
         cursor: 'pointer',
         fontSize: '2.5rem',
+      }}
+      onClick={() => {
+        if (maxTables) return;
+        addBoundaryConditionTableColumn(setFieldValue);
       }}
     />
     <span style={{ fontSize: '1rem', whiteSpace: 'nowrap' }}>
@@ -419,7 +420,7 @@ const BoundaryConditionColumn = ({
       setSelectedFireBreak({
         position,
         type: value,
-      })
+      }),
     );
 
   return (
@@ -427,23 +428,23 @@ const BoundaryConditionColumn = ({
       <td>
         <i
           className='bx bx-trash font-size-24 p-0 w-auto'
-          onClick={() => removeBoundaryConditionTableColumn(position)}
           style={{
             cursor: 'pointer',
             visibility: position === 0 ? 'hidden' : 'visible',
           }}
+          onClick={() => removeBoundaryConditionTableColumn(position)}
         />
       </td>
 
       <td>
         <Input
-          name={`${baseFormId}.timeOffset`}
-          id={`${baseFormId}.timeOffset`}
-          value={baseValues.timeOffset}
           disabled={position === 0}
+          id={`${baseFormId}.timeOffset`}
+          name={`${baseFormId}.timeOffset`}
           placeholder='[Type value]'
-          onChange={handleChange}
+          value={baseValues.timeOffset}
           onBlur={handleBlur}
+          onChange={handleChange}
         />
 
         {!!baseTouched.timeOffset ? (
@@ -453,12 +454,12 @@ const BoundaryConditionColumn = ({
 
       <td>
         <Input
-          name={`${baseFormId}.windDirection`}
           id={`${baseFormId}.windDirection`}
-          value={baseValues.windDirection}
+          name={`${baseFormId}.windDirection`}
           placeholder='[Type value]'
-          onChange={handleChange}
+          value={baseValues.windDirection}
           onBlur={handleBlur}
+          onChange={handleChange}
         />
         {!!baseTouched.windDirection ? (
           <Error message={baseErrors.windDirection} />
@@ -467,12 +468,12 @@ const BoundaryConditionColumn = ({
 
       <td>
         <Input
-          name={`${baseFormId}.windSpeed`}
           id={`${baseFormId}.windSpeed`}
-          value={baseValues.windSpeed}
+          name={`${baseFormId}.windSpeed`}
           placeholder='[Type value]'
-          onChange={handleChange}
+          value={baseValues.windSpeed}
           onBlur={handleBlur}
+          onChange={handleChange}
         />
 
         {!!baseTouched.windSpeed ? (
@@ -482,12 +483,12 @@ const BoundaryConditionColumn = ({
 
       <td>
         <Input
-          name={`${baseFormId}.fuelMoistureContent`}
           id={`${baseFormId}.fuelMoistureContent`}
-          value={baseValues.fuelMoistureContent}
+          name={`${baseFormId}.fuelMoistureContent`}
           placeholder='[Type value]'
-          onChange={handleChange}
+          value={baseValues.fuelMoistureContent}
           onBlur={handleBlur}
+          onChange={handleChange}
         />
 
         {!!baseTouched.fuelMoistureContent ? (
@@ -501,11 +502,11 @@ const BoundaryConditionColumn = ({
           style={{ width: '100%' }}
         >
           <Input
-            type='select'
             className='btn-sm sort-select-input'
+            type='select'
             value={fireBreakSelectedOptions[position]}
-            onChange={handleFireBreakChange}
             onBlur={handleBlur}
+            onChange={handleFireBreakChange}
           >
             {FIRE_BREAK_OPTIONS.map(({ label, value }) => (
               <option key={label} value={value}>
@@ -516,11 +517,11 @@ const BoundaryConditionColumn = ({
 
           <button
             key={position}
-            color='primary'
-            onClick={(evt) => handleFireBreakEditClick(evt, position)}
             className={`btn btn-primary ${
               !isFireBreakSelected ? 'fire-break-selected' : ''
             }`}
+            color='primary'
+            onClick={(evt) => handleFireBreakEditClick(evt, position)}
           >
             {isFireBreakSelected ? 'Finish' : 'Edit'}
           </button>
@@ -529,12 +530,12 @@ const BoundaryConditionColumn = ({
 
       <td>
         <Input
-          name={`${baseFormId}.fireBreak`}
-          id={`${baseFormId}.fireBreak`}
           readOnly
+          id={`${baseFormId}.fireBreak`}
+          name={`${baseFormId}.fireBreak`}
           type='textarea'
           value={getWKTfromFeature(
-            baseValues.fireBreak?.[fireBreakSelectedOptions[position]] ?? ''
+            baseValues.fireBreak?.[fireBreakSelectedOptions[position]] ?? '',
           )}
         />
       </td>

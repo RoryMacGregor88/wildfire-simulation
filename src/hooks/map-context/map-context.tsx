@@ -6,7 +6,7 @@ import React, {
   useState,
 } from 'react';
 
-import { ViewState, MapContextValue } from '~/types';
+import { MapContextValue, ViewState } from '~/types';
 
 export const INITIAL_VIEW_STATE = {
   longitude: 9.56005296,
@@ -32,7 +32,7 @@ export const MapProvider = ({ children }: Props) => {
         ...currentViewState,
         ...newViewState,
       })),
-    []
+    [],
   );
 
   const value: MapContextValue = {

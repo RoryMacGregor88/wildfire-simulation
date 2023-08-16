@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 
-import { SIMULATION_TIME_LIMIT, MAX_GEOMETRY_AREA } from '~/constants';
+import { MAX_GEOMETRY_AREA, SIMULATION_TIME_LIMIT } from '~/constants';
 
 /** Methods are function(){} declarations due to use of 'this' object */
 
@@ -16,11 +16,11 @@ Yup.addMethod(Yup.number, 'uniqueTimeOffset', function (message) {
      * while [1] is the higher parent array of all of those objects.
      */
     const allTimeOffsets = from?.[1].value.boundaryConditions.map((datum) =>
-      Number(datum.timeOffset)
+      Number(datum.timeOffset),
     );
 
     const matchCount = allTimeOffsets.filter(
-      (datum) => datum === timeOffset
+      (datum) => datum === timeOffset,
     ).length;
 
     return matchCount <= 1;
@@ -39,7 +39,7 @@ Yup.addMethod(Yup.number, 'matchHoursToBoundaryConditions', function (message) {
     (hours, { from }) => {
       const boundaryConditionCount = from?.[0].value.boundaryConditions.length;
       return Number(hours) >= boundaryConditionCount;
-    }
+    },
   );
 });
 
@@ -50,14 +50,14 @@ const WildfireSimulationSchema = Yup.object().shape({
     .typeError('This field must be an integer')
     .min(
       1,
-      `Simulation time limit must be between 1 and ${SIMULATION_TIME_LIMIT} hours`
+      `Simulation time limit must be between 1 and ${SIMULATION_TIME_LIMIT} hours`,
     )
     .max(
       SIMULATION_TIME_LIMIT,
-      `Simulation time limit must be between 1 and ${SIMULATION_TIME_LIMIT} hours`
+      `Simulation time limit must be between 1 and ${SIMULATION_TIME_LIMIT} hours`,
     )
     .matchHoursToBoundaryConditions(
-      'Hours cannot be less than number of Boundary Conditions rows'
+      'Hours cannot be less than number of Boundary Conditions rows',
     )
     .required('This field cannot be empty'),
   probabilityRange: Yup.string().required('This field cannot be empty'),
@@ -66,11 +66,11 @@ const WildfireSimulationSchema = Yup.object().shape({
     .required('This field cannot be empty'),
   isMapAreaValid: Yup.boolean().oneOf(
     [true],
-    `Area must be no greater than ${MAX_GEOMETRY_AREA.value}`
+    `Area must be no greater than ${MAX_GEOMETRY_AREA.value}`,
   ),
   isMapAreaValidWKT: Yup.boolean().oneOf(
     [true],
-    'Should contain a valid Well-Known Text'
+    'Should contain a valid Well-Known Text',
   ),
   ignitionDateTime: Yup.date()
     .typeError('Must be valid date selection')
@@ -81,11 +81,11 @@ const WildfireSimulationSchema = Yup.object().shape({
         .typeError('This field cannot be empty')
         .min(
           0,
-          `Time offset must be between 1 and ${SIMULATION_TIME_LIMIT} hours`
+          `Time offset must be between 1 and ${SIMULATION_TIME_LIMIT} hours`,
         )
         .max(
           SIMULATION_TIME_LIMIT,
-          `Time offset must be between 1 and ${SIMULATION_TIME_LIMIT} hours`
+          `Time offset must be between 1 and ${SIMULATION_TIME_LIMIT} hours`,
         )
         .uniqueTimeOffset('Time offset values must be unique')
         .required('This field cannot be empty'),
@@ -107,7 +107,7 @@ const WildfireSimulationSchema = Yup.object().shape({
         .min(0, 'Fuel moisture must be between 0% and 100%')
         .max(100, 'Fuel moisture must be between 0% and 100%')
         .required('This field cannot be empty'),
-    })
+    }),
   ),
 });
 

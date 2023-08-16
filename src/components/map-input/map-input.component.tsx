@@ -4,11 +4,11 @@ import { Input } from 'reactstrap';
 
 import { WKT_HELP } from '~/constants';
 
-const MapInput = ({ setCoordinates, coordinates, setModalData, ...rest }) => (
+const MapInput = ({ coordinates, setCoordinates, setModalData, ...rest }) => (
   <div className='polygon-edit-input'>
     <Input
-      onChange={({ target: { value } }) => setCoordinates(value)}
       value={coordinates}
+      onChange={({ target: { value } }) => setCoordinates(value)}
       {...rest}
     />
     <i onClick={() => setModalData({ type: WKT_HELP, data: null })} />

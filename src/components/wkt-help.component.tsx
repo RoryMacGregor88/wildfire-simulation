@@ -29,8 +29,8 @@ const WktHelp = () => (
     For more info, please refer to the following wiki link (
     <a
       href='https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry'
-      target='_blank'
       rel='noreferrer'
+      target='_blank'
     >
       https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry
     </a>

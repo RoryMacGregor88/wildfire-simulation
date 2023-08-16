@@ -1,21 +1,22 @@
-import { useState, useEffect } from 'react';
-import { Row, Col, Modal, ModalHeader, ModalBody, Container } from 'reactstrap';
+import { useEffect, useState } from 'react';
+
 import moment from 'moment';
+import { Col, Container, Modal, ModalBody, ModalHeader, Row } from 'reactstrap';
+
 import {
   SimulationReview,
   WildfireSimulationForm,
   WktHelp,
 } from '~/components';
-
 import {
   DEFAULT_WILDFIRE_GEOMETRY_BUFFER,
   SIMULATION_REVIEW,
   WILDFIRE_LAYER_TYPES,
   WKT_HELP,
 } from '~/constants';
-import { useMap, INITIAL_VIEW_STATE } from '~/hooks';
-import { getWKTfromFeature } from '~/utils/utils';
+import { INITIAL_VIEW_STATE, useMap } from '~/hooks';
 import { FormData, Payload } from '~/types';
+import { getWKTfromFeature } from '~/utils/utils';
 
 type ModalData = {
   type: string;
@@ -68,10 +69,10 @@ const App = () => {
                       [key]: getWKTfromFeature(value),
                     }
                   : acc,
-              {}
+              {},
             ),
       }),
-      []
+      [],
     );
 
     const transformedGeometry = getWKTfromFeature(formData.mapSelection);
@@ -81,7 +82,7 @@ const App = () => {
         moment(startDateTime)
           .add(formData.hoursOfProjection, 'hours')
           .toISOString()
-          .slice(0, 19)
+          .slice(0, 19),
       );
 
     const payload: Payload = {
@@ -105,14 +106,16 @@ const App = () => {
 
   if (!screenSize) return null;
 
+  console.log('screenSize: ', { screenSize, MIN_SCREEN_SIZE });
+
   return screenSize >= MIN_SCREEN_SIZE ? (
     <div className='page-content'>
       <Container className='sign-up-aoi-map-bg'>
         <Row>
-          <Col xl={5} className='mb-3'>
+          <Col className='mb-3' xl={5}>
             <Row className='d-flex align-items-baseline'>
-              <Col xl={4} className='d-flex align-items-baseline'>
-                <p className='alert-title'>'Data Layers'</p>
+              <Col className='d-flex align-items-baseline' xl={4}>
+                <p className='alert-title'>Data Layers</p>
               </Col>
             </Row>
           </Col>
@@ -127,10 +130,10 @@ const App = () => {
 
       <Modal
         centered
-        isOpen={!!modalData}
-        toggle={toggle}
-        size='lg'
         id='staticBackdrop'
+        isOpen={!!modalData}
+        size='lg'
+        toggle={toggle}
       >
         <ModalHeader style={{ borderColor: 'gray' }} toggle={toggle}>
           {isWktHelp ? 'WKT Guidance' : null}

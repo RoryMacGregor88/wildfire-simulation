@@ -53,7 +53,7 @@ const getViewState = (
   zoomLevel = 4,
   selectedAlert,
   setHoverInfoRef = () => {},
-  setViewStateChangeRef = () => {}
+  setViewStateChangeRef = () => {},
 ) => ({
   midPoint: midPoint,
   longitude: selectedAlert
@@ -181,7 +181,7 @@ const isWKTValid = (wktString: string): boolean => {
   const geometryArray = geoObj.geometries ? geoObj.geometries : [geoObj];
 
   return geometryArray.every((geometry) =>
-    geometry.coordinates[0].every((coord) => areCoordsValid(coord))
+    geometry.coordinates[0].every((coord) => areCoordsValid(coord)),
   );
 };
 

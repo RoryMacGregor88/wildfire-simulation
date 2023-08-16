@@ -1,8 +1,8 @@
 import {
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
   DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  UncontrolledDropdown,
   UncontrolledTooltip,
 } from 'reactstrap';
 
@@ -13,11 +13,11 @@ const MapStyleSwitcher = ({ mapStyles = {}, selectMapStyle }) => (
     </UncontrolledTooltip>
 
     <UncontrolledDropdown
-      id='UncontrolledDropdown'
       className='map-style-dropdown'
       direction='start'
+      id='UncontrolledDropdown'
     >
-      <DropdownToggle caret size='sm' color='mapstyle'>
+      <DropdownToggle caret color='mapstyle' size='sm'>
         <span className='d-flex align-items-center'>
           <i className='bx bxs-layer map-style-icon'></i>
         </span>
@@ -25,15 +25,15 @@ const MapStyleSwitcher = ({ mapStyles = {}, selectMapStyle }) => (
       <DropdownMenu>
         {mapStyles.map((mapStyle) => (
           <div
-            className='d-flex flex-column align-items-center justify-content-center'
             key={mapStyle.label}
+            className='d-flex flex-column align-items-center justify-content-center'
           >
             <DropdownItem onClick={() => selectMapStyle(mapStyle)}>
               <div className='d-flex flex-column align-items-center justify-content-center'>
                 <img
-                  src={mapStyle.thumbnail}
-                  className='w-75 h-75'
                   alt={mapStyle.label}
+                  className='w-75 h-75'
+                  src={mapStyle.thumbnail}
                 />
                 <p>{mapStyle.label}</p>
               </div>

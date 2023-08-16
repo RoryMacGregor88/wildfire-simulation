@@ -102,11 +102,11 @@ const PolygonMap = ({
     children,
   }) => (
     <div style={{ position: 'absolute', top, right: '10px' }}>
-      <div className="mapboxgl-ctrl mapboxgl-ctrl-group">
+      <div className='mapboxgl-ctrl mapboxgl-ctrl-group'>
         <button
-          className="mapboxgl-ctrl-icon d-flex justify-content-center align-items-center"
+          className='mapboxgl-ctrl-icon d-flex justify-content-center align-items-center'
           style={{ ...style }}
-          type="button"
+          type='button'
           onClick={onClick}
         >
           {children}
@@ -179,11 +179,11 @@ const PolygonMap = ({
       <MapGL
         {...viewState}
         ContextProvider={MapContext.Provider}
-        height="100%"
+        height='100%'
         mapStyle={selectedMapStyle.uri}
         mapboxApiAccessToken={MAPBOX_TOKEN}
         views={new MapView({ repeat: true })}
-        width="100%"
+        width='100%'
         onViewStateChange={({ viewState }) => updateViewState(viewState)}
       >
         <Editor
@@ -212,7 +212,7 @@ const PolygonMap = ({
             style={{
               backgroundColor: modeId === selectedDrawType ? 'lightgray' : '',
             }}
-            top="50px"
+            top='50px'
             onClick={() => editToggle(selectedDrawType)}
           >
             <i
@@ -224,7 +224,7 @@ const PolygonMap = ({
           </MapControlButton>
 
           <MapControlButton onClick={handleClearMap}>
-            <i className="bx bx-trash" style={{ fontSize: '20px' }}></i>
+            <i className='bx bx-trash' style={{ fontSize: '20px' }}></i>
           </MapControlButton>
         </>
       </MapGL>

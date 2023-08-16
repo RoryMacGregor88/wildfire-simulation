@@ -1,4 +1,4 @@
-import { createSlice, createSelector } from '@reduxjs/toolkit';
+import { createSelector, createSlice } from '@reduxjs/toolkit';
 
 const name = 'dataLayer';
 
@@ -59,17 +59,17 @@ export const errorSelector = createSelector(baseSelector, (app) => app?.error);
 
 export const selectedFireBreakSelector = createSelector(
   baseSelector,
-  (app) => app?.selectedFireBreak
+  (app) => app?.selectedFireBreak,
 );
 
 export const selectedMapStyleSelector = createSelector(
   baseSelector,
-  (app) => app?.selectedMapStyle
+  (app) => app?.selectedMapStyle,
 );
 
 export const mapStylesSelector = createSelector(
   baseSelector,
-  (app) => app?.mapStyles
+  (app) => app?.mapStyles,
 );
 
 export default appSlice.reducer;
