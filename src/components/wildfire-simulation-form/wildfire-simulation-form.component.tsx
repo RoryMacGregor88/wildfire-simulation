@@ -1,25 +1,22 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
-import { area } from '@turf/turf';
 import { Feature } from '@turf/helpers';
-import wkt from 'wkt';
+import { area } from '@turf/turf';
 import { Formik } from 'formik';
 import moment from 'moment';
+import { Button, Col, Container, Form, Row } from 'reactstrap';
+import wkt from 'wkt';
+
+import { BoundaryConditions, FormMap, TopFormSection } from '~/components';
+import { DEFAULT_FIRE_BREAK_TYPE, MAX_GEOMETRY_AREA } from '~/constants';
 import { useAppDispatch, useAppSelector } from '~/hooks';
-
-import { Button, Row, Col, Form, Container } from 'reactstrap';
-
 import {
-  setSelectedFireBreak,
   selectedFireBreakSelector,
+  setSelectedFireBreak,
 } from '~/store/app.slice';
-import { isWKTValid, getGeoPolygon } from '~/utils/utils';
+import { getGeoPolygon, isWKTValid } from '~/utils/utils';
 
 import WildfireSimulationSchema from './wildfire-simulation-form-schema';
-
-import { DEFAULT_FIRE_BREAK_TYPE, MAX_GEOMETRY_AREA } from '~/constants';
-
-import { TopFormSection, FormMap, BoundaryConditions } from '~/components';
 
 const TABLE_INITIAL_STATE = [0],
   FORM_INITIAL_STATE = {
@@ -136,7 +133,7 @@ const WildfireSimulation = ({ handleResetAOI, setModalData, onSubmit }) => {
   };
 
   const addBoundaryConditionTableColumn = async (
-    setFieldValue: (field: string, value: any) => void
+    setFieldValue: (field: string, value: any) => void,
   ) => {
     const nextIndex = tableEntries.length;
     setTableEntries([...tableEntries, nextIndex]);
@@ -147,7 +144,7 @@ const WildfireSimulation = ({ handleResetAOI, setModalData, onSubmit }) => {
      */
     await setFieldValue(
       `boundaryConditions.${nextIndex}.timeOffset`,
-      nextIndex
+      nextIndex,
     );
 
     /**
@@ -168,8 +165,8 @@ const WildfireSimulation = ({ handleResetAOI, setModalData, onSubmit }) => {
       Object.entries(prev).reduce(
         (acc, [key, value]) =>
           Number(key) === position ? acc : { ...acc, [key]: value },
-        {}
-      )
+        {},
+      ),
     );
   };
 
@@ -198,11 +195,11 @@ const WildfireSimulation = ({ handleResetAOI, setModalData, onSubmit }) => {
   return (
     <Row>
       <Formik
+        validateOnChange
+        id='wildfireSimulationForm'
         initialValues={FORM_INITIAL_STATE}
         validationSchema={WildfireSimulationSchema}
-        validateOnChange
         onSubmit={onSubmit}
-        id='wildfireSimulationForm'
       >
         {({
           values,
@@ -228,32 +225,32 @@ const WildfireSimulation = ({ handleResetAOI, setModalData, onSubmit }) => {
 
           return (
             <Form
-              onSubmit={handleSubmit}
               className='d-flex flex-column justify-content-between'
+              onSubmit={handleSubmit}
             >
               <Container>
                 <Row>
                   {/* Body of form, on left */}
                   <Col
-                    xl={5}
                     className='d-flex flex-column justify-content-between'
+                    xl={5}
                   >
                     <TopFormSection
+                      getDateOffset={getDateOffset}
                       handleResetAOI={handleResetAOI}
                       mapInputOnChange={mapInputOnChange}
                       setModalData={setModalData}
-                      getDateOffset={getDateOffset}
                       {...formProps}
                     />
                   </Col>
 
                   {/* Map on right */}
-                  <Col xl={7} className='mx-auto'>
+                  <Col className='mx-auto' xl={7}>
                     <FormMap
-                      selectedFireBreak={selectedFireBreak}
-                      getAllGeojson={getAllGeojson}
-                      validateArea={validateArea}
                       fireBreakSelectedOptions={fireBreakSelectedOptions}
+                      getAllGeojson={getAllGeojson}
+                      selectedFireBreak={selectedFireBreak}
+                      validateArea={validateArea}
                       {...formProps}
                     />
                   </Col>
@@ -262,17 +259,17 @@ const WildfireSimulation = ({ handleResetAOI, setModalData, onSubmit }) => {
                 {/* Dynamic form rows, at bottom */}
                 <Row>
                   <BoundaryConditions
-                    selectedFireBreak={selectedFireBreak}
+                    addBoundaryConditionTableColumn={
+                      addBoundaryConditionTableColumn
+                    }
                     fireBreakSelectedOptions={fireBreakSelectedOptions}
                     handleFireBreakEditClick={handleFireBreakEditClick}
-                    tableEntries={tableEntries}
                     maxTables={maxTables}
                     removeBoundaryConditionTableColumn={
                       removeBoundaryConditionTableColumn
                     }
-                    addBoundaryConditionTableColumn={
-                      addBoundaryConditionTableColumn
-                    }
+                    selectedFireBreak={selectedFireBreak}
+                    tableEntries={tableEntries}
                     {...formProps}
                   />
                 </Row>
@@ -280,9 +277,9 @@ const WildfireSimulation = ({ handleResetAOI, setModalData, onSubmit }) => {
                 <Row>
                   <Col>
                     <Button
-                      type='submit'
                       className='btn btn-primary'
                       color='primary'
+                      type='submit'
                     >
                       Request
                     </Button>
