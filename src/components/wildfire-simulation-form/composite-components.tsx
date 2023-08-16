@@ -10,6 +10,7 @@ import {
 } from '~/constants';
 import { INITIAL_VIEW_STATE, useAppDispatch, useMap } from '~/hooks';
 import { setSelectedFireBreak } from '~/store/app.slice';
+import { FireBreakValue } from '~/types';
 import { getWKTfromFeature } from '~/utils/utils';
 
 /** Form section on left */
@@ -294,10 +295,13 @@ const FormMap = ({
     }
   };
 
-  const onSelect = (selected) => {
-    const id = selected?.selectedFeature?.properties?.id;
-    if (id) {
-      const [type, position] = id.split('-');
+  const onSelect = (selectedId: string) => {
+    if (selectedId) {
+      const [type, position] = selectedId.split('-') as [
+        FireBreakValue,
+        string,
+      ];
+
       dispatch(
         setSelectedFireBreak({
           type,

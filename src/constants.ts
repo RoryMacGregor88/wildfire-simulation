@@ -1,3 +1,5 @@
+import { FireBreakStrokeColors } from './types';
+
 export const WKT_HELP = 'wktHelp';
 export const SIMULATION_REVIEW = 'simulationReview';
 
@@ -39,7 +41,7 @@ export const FIRE_BREAK_OPTIONS = [
   { label: 'Vehicle', value: 'vehicle' },
 ];
 
-export const FIRE_BREAK_STROKE_COLORS = {
+export const FIRE_BREAK_STROKE_COLORS: FireBreakStrokeColors = {
   canadair: 'rgb(234,67,53)',
   helicopter: 'rgb(52,168,83)',
   waterLine: 'rgb(251,188,4)',

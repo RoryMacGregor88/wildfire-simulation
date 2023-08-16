@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { area } from '@turf/turf';
 import { Formik } from 'formik';
@@ -51,10 +51,7 @@ interface Props {
   onSubmit: (formData: FormData) => void;
 }
 
-const WildfireSimulation: FC<Props> = ({
-  setModalData,
-  onSubmit,
-}): JSX.Element => {
+const WildfireSimulation = ({ setModalData, onSubmit }: Props) => {
   const dispatch = useAppDispatch();
 
   const validateArea = (polygon: Feature): boolean =>

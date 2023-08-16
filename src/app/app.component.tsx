@@ -19,7 +19,7 @@ import { getWKTfromFeature } from '~/utils/utils';
 
 const MIN_SCREEN_SIZE = 1500;
 
-const App: FC = (): JSX.Element | null => {
+const App = () => {
   const [modalData, setModalData] = useState<ModalData | null>(null);
   const [screenSize, setScreenSize] = useState<number | null>(null);
 

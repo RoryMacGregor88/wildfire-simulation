@@ -6,7 +6,14 @@ import {
   UncontrolledTooltip,
 } from 'reactstrap';
 
-const MapStyleSwitcher = ({ mapStyles = {}, selectMapStyle }) => (
+import { MapStyle } from '~/types';
+
+interface Props {
+  mapStyles: MapStyle[];
+  updateMapStyle: (mapStyle: MapStyle) => void;
+}
+
+const MapStyleSwitcher = ({ mapStyles, updateMapStyle }: Props) => (
   <>
     <UncontrolledTooltip placement='left' target='UncontrolledDropdown'>
       Change Map Style
@@ -28,7 +35,7 @@ const MapStyleSwitcher = ({ mapStyles = {}, selectMapStyle }) => (
             key={mapStyle.label}
             className='d-flex flex-column align-items-center justify-content-center'
           >
-            <DropdownItem onClick={() => selectMapStyle(mapStyle)}>
+            <DropdownItem onClick={() => updateMapStyle(mapStyle)}>
               <div className='d-flex flex-column align-items-center justify-content-center'>
                 <img
                   alt={mapStyle.label}

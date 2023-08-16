@@ -39,9 +39,13 @@ export interface ModalData {
 
 export type SetModalData = Dispatch<SetStateAction<ModalData | null>>;
 
+export type FireBreakStrokeColors = {
+  [key in FireBreakValue]: string;
+};
+
 export type FireBreakValue =
   | 'canadair'
-  | 'celicopter'
+  | 'helicopter'
   | 'waterLine'
   | 'vehicle';
 

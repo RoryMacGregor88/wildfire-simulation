@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 
-import { MapView } from '@deck.gl/core';
-import MapGL, {
-  FullscreenControl,
-  MapContext,
-  NavigationControl,
-} from 'react-map-gl';
-import { Editor, RENDER_STATE } from 'react-map-gl-draw';
+import { Feature } from '@nebula.gl/edit-modes';
+import MapGL, { FullscreenControl, NavigationControl } from 'react-map-gl';
+import {
+  DrawPolygonMode,
+  EditingMode,
+  Editor,
+  RENDER_STATE,
+} from 'react-map-gl-draw';
 
 import { MapStyleSwitcher } from '~/components';
 import {
@@ -29,6 +30,46 @@ import {
   selectedMapStyleSelector,
   setSelectedMapStyle,
 } from '~/store/app.slice';
+import { FireBreakValue, MapStyle, ViewState } from '~/types';
+
+interface MapControlButtonProps {
+  top?: string;
+  style?: { [key: string]: string };
+  onClick: () => void;
+  children: ReactNode;
+}
+
+interface MapEvent {
+  selectedFeature: {
+    type: 'Feature';
+    properties: { id: string };
+    geometry: Feature;
+  };
+  mapCoords: [number, number];
+  screenCoords: [number, number];
+}
+
+type ModeId = string;
+
+const MapControlButton = ({
+  top = '90px',
+  style = {},
+  onClick,
+  children,
+}: MapControlButtonProps) => (
+  <div style={{ position: 'absolute', top, right: '10px' }}>
+    <div className='mapboxgl-ctrl mapboxgl-ctrl-group'>
+      <button
+        className='mapboxgl-ctrl-icon d-flex justify-content-center align-items-center'
+        style={{ ...style }}
+        type='button'
+        onClick={onClick}
+      >
+        {children}
+      </button>
+    </div>
+  </div>
+);
 
 const getPosition = (position: string) => {
   const [y, x] = position.split('-');
@@ -39,6 +80,15 @@ const getPosition = (position: string) => {
   };
 };
 
+interface Props {
+  coordinates: Feature[];
+  setCoordinates: (feature: Feature[], areaIsValid?: boolean) => void;
+  onSelect: (selectedId: string) => void;
+  clearMap: () => void;
+  isDrawingPolygon: boolean;
+  validateArea: () => boolean;
+}
+
 const PolygonMap = ({
   coordinates,
   setCoordinates,
@@ -46,7 +96,7 @@ const PolygonMap = ({
   clearMap,
   isDrawingPolygon,
   validateArea,
-}) => {
+}: Props) => {
   const { viewState, updateViewState } = useMap();
 
   const dispatch = useAppDispatch();
@@ -54,37 +104,40 @@ const PolygonMap = ({
   const mapStyles = useAppSelector(mapStylesSelector);
   const selectedMapStyle = useAppSelector(selectedMapStyleSelector);
 
-  const [mode, setMode] = useState({});
+  const [mode, setMode] = useState<{
+    modeId?: ModeId;
+    modeHandler?: EditingMode | DrawPolygonMode | null;
+  }>({});
 
-  const [selectedFeatureData, setSelectedFeatureData] = useState(null);
+  const [selectedFeatureData, setSelectedFeatureData] =
+    useState<MapEvent | null>(null);
+
   const [areaIsValid, setAreaIsValid] = useState(true);
 
   const { modeId, modeHandler } = mode;
 
-  const toggleMode = (evt) => {
-    if (evt === modeId) return;
+  const toggleMode = (value: ModeId) => {
+    if (value === modeId) return;
 
-    const newId = evt ?? null,
+    const newId = value ?? null,
       mode = MODES.find(({ id }) => id === newId),
       modeHandler = mode ? new mode.handler() : null;
 
     setMode({ modeId: newId, modeHandler });
   };
 
-  const editToggle = (mode) => {
-    if (mode === DRAW_TYPES.LINE_STRING) {
-      toggleMode(
-        modeId === DRAW_TYPES.LINE_STRING ? 'editing' : DRAW_TYPES.LINE_STRING,
-      );
-    } else if (mode === DRAW_TYPES.POLYGON) {
+  const editToggle = (value: ModeId) => {
+    if (value === DRAW_TYPES.LINE_STRING) {
+      const isDrawingLineString = modeId === DRAW_TYPES.LINE_STRING;
+      toggleMode(isDrawingLineString ? 'editing' : DRAW_TYPES.LINE_STRING);
+    } else if (value === DRAW_TYPES.POLYGON) {
       /** clear map before drawig new polygon */
       if (coordinates.length) {
         setAreaIsValid(true);
         setCoordinates([]);
       }
-      toggleMode(
-        modeId === DRAW_TYPES.POLYGON ? 'editing' : DRAW_TYPES.POLYGON,
-      );
+      const isDrawingPolygon = modeId === DRAW_TYPES.POLYGON;
+      toggleMode(isDrawingPolygon ? 'editing' : DRAW_TYPES.POLYGON);
     }
   };
 
@@ -95,30 +148,12 @@ const PolygonMap = ({
     }
   };
 
-  const MapControlButton = ({
-    top = '90px',
-    style = {},
-    onClick,
-    children,
-  }) => (
-    <div style={{ position: 'absolute', top, right: '10px' }}>
-      <div className='mapboxgl-ctrl mapboxgl-ctrl-group'>
-        <button
-          className='mapboxgl-ctrl-icon d-flex justify-content-center align-items-center'
-          style={{ ...style }}
-          type='button'
-          onClick={onClick}
-        >
-          {children}
-        </button>
-      </div>
-    </div>
-  );
-
   // TODO: is this what's causing need to double click icon?
   const selectedDrawType = isDrawingPolygon
     ? DRAW_TYPES.POLYGON
     : DRAW_TYPES.LINE_STRING;
+
+  const isDrawTypeSelected = modeId === selectedDrawType;
 
   const handleUpdate = ({ data, editType }) => {
     if (editType === 'addFeature') {
@@ -132,18 +167,20 @@ const PolygonMap = ({
     }
   };
 
-  const handleSelectMapStyle = (mapStyle) => {
+  const handleSelectMapStyle = (mapStyle: MapStyle) => {
     dispatch(setSelectedMapStyle(mapStyle));
   };
 
-  const handleSelect = (selected) => {
+  const handleSelect = (mapEvent: MapEvent) => {
+    const { selectedFeature } = mapEvent;
+
     /**
      * onSelect sends the data to the component using the map,
      * setSelectedFeatureData sets the map's internal state for
      * displaying data
      */
-    onSelect(selected);
-    setSelectedFeatureData(selected);
+    onSelect(selectedFeature.properties.id);
+    setSelectedFeatureData(mapEvent);
   };
 
   const getfeatureStyle = ({ feature, state, index }) => {
@@ -156,9 +193,11 @@ const PolygonMap = ({
         r: POINT_RADIUS,
       };
     }
+
+    const fireBreakType = feature.properties.fireBreakType as FireBreakValue;
+
     const stroke =
-      FIRE_BREAK_STROKE_COLORS[feature.properties.fireBreakType] ??
-      POLYGON_LINE_COLOR;
+      FIRE_BREAK_STROKE_COLORS[fireBreakType] ?? POLYGON_LINE_COLOR;
 
     const defaultFeatureStyles = {
       stroke,
@@ -178,26 +217,26 @@ const PolygonMap = ({
     <>
       <MapGL
         {...viewState}
-        ContextProvider={MapContext.Provider}
         height='100%'
         mapStyle={selectedMapStyle.uri}
         mapboxApiAccessToken={MAPBOX_TOKEN}
-        views={new MapView({ repeat: true })}
         width='100%'
-        onViewStateChange={({ viewState }) => updateViewState(viewState)}
+        onViewStateChange={({ viewState }: { viewState: ViewState }) =>
+          updateViewState(viewState)
+        }
       >
         <Editor
           clickRadius={12}
           featureStyle={getfeatureStyle}
           features={coordinates}
-          mode={modeHandler}
+          /** Above 'modeHandler' type is correct, but Editor expects generic object */
+          mode={modeHandler as Record<string, unknown> | undefined}
           onSelect={handleSelect}
           onUpdate={handleUpdate}
         />
         <MapStyleSwitcher
           mapStyles={mapStyles}
-          selectMapStyle={handleSelectMapStyle}
-          selectedMapStyle={selectedMapStyle}
+          updateMapStyle={handleSelectMapStyle}
         />
 
         <FullscreenControl style={getPosition(SCREEN_CONTROL_POSITION)} />
@@ -209,9 +248,7 @@ const PolygonMap = ({
 
         <>
           <MapControlButton
-            style={{
-              backgroundColor: modeId === selectedDrawType ? 'lightgray' : '',
-            }}
+            style={{ backgroundColor: isDrawTypeSelected ? 'lightgray' : '' }}
             top='50px'
             onClick={() => editToggle(selectedDrawType)}
           >
