@@ -133,7 +133,7 @@ const WildfireSimulation = ({ handleResetAOI, setModalData, onSubmit }) => {
   };
 
   const addBoundaryConditionTableColumn = async (
-    setFieldValue: (field: string, value: any) => void,
+    setFieldValue: (field: string, value: unknown) => void,
   ) => {
     const nextIndex = tableEntries.length;
     setTableEntries([...tableEntries, nextIndex]);

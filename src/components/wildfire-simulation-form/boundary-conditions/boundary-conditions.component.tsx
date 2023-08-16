@@ -32,6 +32,7 @@ const BoundaryConditions = (props) => {
               {() =>
                 tableEntries.map((position: number) => (
                   <BoundaryConditionColumn
+                    key={position}
                     position={position}
                     values={values}
                     {...restOfProps}

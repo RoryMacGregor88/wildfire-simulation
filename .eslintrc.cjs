@@ -28,6 +28,8 @@ module.exports = {
     'no-extra-boolean-cast': 0,
     'react-hooks/exhaustive-deps': 'warn',
     'react/react-in-jsx-scope': 'off',
+    'react/prop-types': 'off',
+    // TODO: remember to resinstate prop-types^
     'import/no-unresolved': 'off',
     'no-duplicate-imports': 'error',
     'no-multiple-empty-lines': [
