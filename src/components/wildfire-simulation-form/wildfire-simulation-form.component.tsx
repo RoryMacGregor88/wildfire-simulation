@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 
-import { Feature } from '@turf/helpers';
 import { area } from '@turf/turf';
 import { Formik } from 'formik';
 import moment from 'moment';
@@ -14,12 +13,19 @@ import {
   selectedFireBreakSelector,
   setSelectedFireBreak,
 } from '~/store/app.slice';
+import {
+  FireBreakValue,
+  FormData,
+  ResetForm,
+  SetFieldValue,
+  SetModalData,
+} from '~/types';
 import { getGeoPolygon, isWKTValid } from '~/utils/utils';
 
 import WildfireSimulationSchema from './wildfire-simulation-form-schema';
 
 const TABLE_INITIAL_STATE = [0],
-  FORM_INITIAL_STATE = {
+  FORM_INITIAL_STATE: FormData = {
     simulationTitle: '',
     simulationDescription: '',
     probabilityRange: 0.75,
@@ -40,18 +46,28 @@ const TABLE_INITIAL_STATE = [0],
     ],
   };
 
-const WildfireSimulation = ({ handleResetAOI, setModalData, onSubmit }) => {
+interface Props {
+  setModalData: SetModalData;
+  onSubmit: (formData: FormData) => void;
+}
+
+const WildfireSimulation: FC<Props> = ({
+  setModalData,
+  onSubmit,
+}): JSX.Element => {
   const dispatch = useAppDispatch();
 
-  const validateArea = (feature: Feature) =>
-    Math.ceil(area(feature)) <= MAX_GEOMETRY_AREA.value;
+  const validateArea = (polygon: Feature): boolean =>
+    Math.ceil(area(polygon)) <= MAX_GEOMETRY_AREA.value;
 
   const selectedFireBreak = useAppSelector(selectedFireBreakSelector);
 
   /** To manage number of dynamic (vertical) table rows in `Boundary Conditions` */
   const [tableEntries, setTableEntries] = useState(TABLE_INITIAL_STATE);
 
-  const [fireBreakSelectedOptions, setFireBreakSelectedOptions] = useState({
+  const [fireBreakSelectedOptions, setFireBreakSelectedOptions] = useState<{
+    [key: number]: FireBreakValue;
+  }>({
     0: DEFAULT_FIRE_BREAK_TYPE,
   });
 
@@ -80,9 +96,13 @@ const WildfireSimulation = ({ handleResetAOI, setModalData, onSubmit }) => {
 
   /**
    * This is never called from drawing on map, only if
-   * typed/pasted directly into field
+   * typed/pasted directly into field.
+   * Value may not be WKT
    */
-  const mapInputOnChange = async (value, setFieldValue) => {
+  const mapInputOnChange = async (
+    value: string,
+    setFieldValue: SetFieldValue,
+  ): Promise<void> => {
     /**
      * WKT converted to GeoJson for storage in form values,
      * is converted back to WKT to be displayed in form field
@@ -102,15 +122,15 @@ const WildfireSimulation = ({ handleResetAOI, setModalData, onSubmit }) => {
       const isWktValid = isWKTValid(value);
       await setFieldValue('isValidWkt', isWktValid);
 
-      const features = wkt.parse(value);
-      if (features) {
-        const isAreaValid = validateArea(features);
+      const polygon = wkt.parse(value);
+      if (polygon) {
+        const isAreaValid = validateArea(polygon);
         await setFieldValue('isMapAreaValid', isAreaValid);
       }
     }
   };
 
-  const clearForm = (resetForm: () => void) => {
+  const clearForm = (resetForm: ResetForm) => {
     setTableEntries(TABLE_INITIAL_STATE);
     resetForm();
   };
@@ -133,7 +153,7 @@ const WildfireSimulation = ({ handleResetAOI, setModalData, onSubmit }) => {
   };
 
   const addBoundaryConditionTableColumn = async (
-    setFieldValue: (field: string, value: unknown) => void,
+    setFieldValue: SetFieldValue,
   ) => {
     const nextIndex = tableEntries.length;
     setTableEntries([...tableEntries, nextIndex]);
@@ -179,9 +199,9 @@ const WildfireSimulation = ({ handleResetAOI, setModalData, onSubmit }) => {
 
     dispatch(setSelectedFireBreak(isSelected ? null : { position, type }));
   };
-
-  const getAllGeojson = (formValues) => {
-    const { mapSelection, boundaryConditions } = formValues;
+  // TODO: need to remember what this is for
+  const getAllGeojson = (values) => {
+    const { mapSelection, boundaryConditions } = values;
 
     const fireBreaks = boundaryConditions.reduce((acc, cur) => {
       /** Will be sub-array of features if more than one line drawn */
@@ -237,7 +257,6 @@ const WildfireSimulation = ({ handleResetAOI, setModalData, onSubmit }) => {
                   >
                     <TopFormSection
                       getDateOffset={getDateOffset}
-                      handleResetAOI={handleResetAOI}
                       mapInputOnChange={mapInputOnChange}
                       setModalData={setModalData}
                       {...formProps}

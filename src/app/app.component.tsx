@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 
 import moment from 'moment';
 import { Col, Container, Modal, ModalBody, ModalHeader, Row } from 'reactstrap';
@@ -14,20 +14,13 @@ import {
   WILDFIRE_LAYER_TYPES,
   WKT_HELP,
 } from '~/constants';
-import { INITIAL_VIEW_STATE, useMap } from '~/hooks';
-import { FormData, Payload } from '~/types';
+import { FormData, ModalData, Payload } from '~/types';
 import { getWKTfromFeature } from '~/utils/utils';
-
-type ModalData = {
-  type: string;
-  data?: Payload;
-} | null;
 
 const MIN_SCREEN_SIZE = 1500;
 
-const App = () => {
-  const { updateViewState } = useMap();
-  const [modalData, setModalData] = useState<ModalData>(null);
+const App: FC = (): JSX.Element | null => {
+  const [modalData, setModalData] = useState<ModalData | null>(null);
   const [screenSize, setScreenSize] = useState<number | null>(null);
 
   useEffect(() => {
@@ -37,7 +30,7 @@ const App = () => {
     }
   }, [screenSize]);
 
-  const toggle = () => setModalData(null);
+  const toggleModal = () => setModalData(null);
 
   const { type, data } = modalData ?? {};
 
@@ -45,7 +38,6 @@ const App = () => {
     isWktHelp = type === WKT_HELP;
 
   const onSubmit = (formData: FormData) => {
-    // TODO: test submit works
     /** Rename properties to match what server expects */
     const boundary_conditions = Object.values(formData.boundaryConditions).map(
       ({
@@ -106,8 +98,6 @@ const App = () => {
 
   if (!screenSize) return null;
 
-  console.log('screenSize: ', { screenSize, MIN_SCREEN_SIZE });
-
   return screenSize >= MIN_SCREEN_SIZE ? (
     <div className='page-content'>
       <Container className='sign-up-aoi-map-bg'>
@@ -122,7 +112,6 @@ const App = () => {
           <Col xl={7} />
         </Row>
         <WildfireSimulationForm
-          handleResetAOI={() => updateViewState(INITIAL_VIEW_STATE)}
           setModalData={setModalData}
           onSubmit={onSubmit}
         />
@@ -133,9 +122,9 @@ const App = () => {
         id='staticBackdrop'
         isOpen={!!modalData}
         size='lg'
-        toggle={toggle}
+        toggle={toggleModal}
       >
-        <ModalHeader style={{ borderColor: 'gray' }} toggle={toggle}>
+        <ModalHeader style={{ borderColor: 'gray' }} toggle={toggleModal}>
           {isWktHelp ? 'WKT Guidance' : null}
           {isSimulationReview ? 'Simulation Review' : null}
         </ModalHeader>

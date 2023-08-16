@@ -1,6 +1,7 @@
 import { PolygonLayer } from '@deck.gl/layers';
 import { fitBounds } from '@math.gl/web-mercator';
 import { FlyToInterpolator } from 'deck.gl';
+import { Feature } from 'geojson';
 import wkt from 'wkt';
 
 const ORANGE = [226, 123, 29];
@@ -206,20 +207,20 @@ const getPolygonLayerFromGeometry = (geometry) => {
   });
 };
 
-const getGeoPolygon = (value) => {
-  const geoJson = wkt.parse(value);
+const getGeoPolygon = (value: string): Feature[] | string => {
+  const geometry = wkt.parse(value);
 
   /**
    * if non-valid field (user has typed/pasted non-WKT),
    * just return the value and let validation catch error
    */
-  if (!geoJson) return value;
+  if (!geometry) return value;
 
   const feature = {
     type: 'Feature',
     properties: {},
-    geometry: geoJson,
-  };
+    geometry,
+  } as Feature;
 
   return [feature];
 };

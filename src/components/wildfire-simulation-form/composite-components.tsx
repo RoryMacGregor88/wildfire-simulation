@@ -8,18 +8,18 @@ import {
   PROBABILITY_INFO,
   PROBABILITY_RANGES,
 } from '~/constants';
-import { useAppDispatch } from '~/hooks';
+import { INITIAL_VIEW_STATE, useAppDispatch, useMap } from '~/hooks';
 import { setSelectedFireBreak } from '~/store/app.slice';
 import { getWKTfromFeature } from '~/utils/utils';
 
 /** Form section on left */
 const TopFormSection = ({
-  handleResetAOI,
   mapInputOnChange,
   setModalData,
   getDateOffset,
   ...formProps
 }) => {
+  const { updateViewState } = useMap();
   const { errors, values, touched, setFieldValue, handleChange, handleBlur } =
     formProps;
 
@@ -33,7 +33,11 @@ const TopFormSection = ({
           <h4>Request Map</h4>
         </Col>
         <Col className='d-flex justify-content-end align-items-center'>
-          <Button className='p-0' color='link' onClick={handleResetAOI}>
+          <Button
+            className='p-0'
+            color='link'
+            onClick={() => updateViewState(INITIAL_VIEW_STATE)}
+          >
             Default AOI
           </Button>
         </Col>

@@ -1,5 +1,7 @@
 import { createSelector, createSlice } from '@reduxjs/toolkit';
 
+import { AppState, FireBreakData, MapStyle, RootState } from '~/types';
+
 const name = 'dataLayer';
 
 const MAP_STYLES = [
@@ -30,7 +32,7 @@ const MAP_STYLES = [
   },
 ];
 
-export const initialState = {
+export const initialState: AppState = {
   selectedFireBreak: null,
   mapStyles: MAP_STYLES,
   selectedMapStyle: MAP_STYLES[0],
@@ -41,11 +43,14 @@ const appSlice = createSlice({
   name,
   initialState,
   reducers: {
-    setSelectedFireBreak: (state, { payload }) => {
+    setSelectedFireBreak: (
+      state,
+      { payload }: { payload: FireBreakData | null },
+    ) => {
       state.selectedFireBreak = payload;
       state.error = false;
     },
-    setSelectedMapStyle: (state, { payload }) => {
+    setSelectedMapStyle: (state, { payload }: { payload: MapStyle }) => {
       state.selectedMapStyle = payload;
     },
   },
@@ -53,23 +58,23 @@ const appSlice = createSlice({
 
 export const { setSelectedFireBreak, setSelectedMapStyle } = appSlice.actions;
 
-const baseSelector = (state) => state?.app;
+const baseSelector = ({ app }: RootState) => app;
 
-export const errorSelector = createSelector(baseSelector, (app) => app?.error);
+export const errorSelector = createSelector(baseSelector, ({ error }) => error);
 
 export const selectedFireBreakSelector = createSelector(
   baseSelector,
-  (app) => app?.selectedFireBreak,
+  ({ selectedFireBreak }) => selectedFireBreak,
 );
 
 export const selectedMapStyleSelector = createSelector(
   baseSelector,
-  (app) => app?.selectedMapStyle,
+  ({ selectedMapStyle }) => selectedMapStyle,
 );
 
 export const mapStylesSelector = createSelector(
   baseSelector,
-  (app) => app?.mapStyles,
+  ({ mapStyles }) => mapStyles,
 );
 
 export default appSlice.reducer;
